@@ -2,11 +2,13 @@ package com.malyszaryczlowiek.shop.products;
 
 import com.malyszaryczlowiek.shop.categories.Category;
 import com.malyszaryczlowiek.shop.categories.CategoryRepository;
+import com.malyszaryczlowiek.shop.controllerUtil.ControllerUtil;
 import com.malyszaryczlowiek.shop.shoppingCart.ShoppingCart;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
-import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +21,9 @@ import java.util.List;
 @RequestMapping(path = "/product")
 public class ProductController {
 
+    private final Logger logger = LoggerFactory.getLogger(ProductController.class);
 
+    private final ControllerUtil controllerUtil;
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
     private final ShoppingCart shoppingCart;
@@ -29,9 +33,11 @@ public class ProductController {
      */
     @Autowired
     public ProductController(
+            ControllerUtil controllerUtil,
             ProductRepository productRepository,
             CategoryRepository categoryRepository,
             ShoppingCart shoppingCart) {
+        this.controllerUtil = controllerUtil;
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
         this.shoppingCart = shoppingCart;
@@ -41,77 +47,44 @@ public class ProductController {
     /**
      * to jest metoda z null string jako kategorią.
      */
-    @RequestMapping(path = "/{category}", method = RequestMethod.GET)
-    public ResponseEntity<Page<ProductModel>> getAllProductsInCategory(
-            @PathVariable(name = "category") String category,
-            @RequestParam(name = "page", defaultValue = "0") @PositiveOrZero int page,
-            @RequestParam(name = "size", defaultValue = "10") @PositiveOrZero int size,
-            @RequestParam(name = "sort", defaultValue = "desc") String sorting,
-            @RequestParam(name = "sortBy", defaultValue = "time") String sortBy)
-    {
-        List<Category> listOfCategories = getListOfCategories(category, null, null);
-        Pageable pageable = setPaging(page, size, sorting, sortBy);
-        return getProducts(listOfCategories, pageable);
+    @RequestMapping(path = "/{section}", method = RequestMethod.GET)
+    public ResponseEntity<Page<ProductModel>> getAllCategoriesInSection(
+            @PathVariable(name = "section") String section) {
+        zrobić refactoring metody,
+            tak aby zwracała tylko linki do categorii,
+        return reimplement;
     }
 
 
     /**
      * to jest metoda z empty string jako kategorią.
      */
-    @RequestMapping(path = "/{category}/{subcategory1}", method = RequestMethod.GET)
-    public ResponseEntity<Page<ProductModel>> getAllProductsInSubCategory(
-            @PathVariable(name = "category") String category,
-            @PathVariable(name = "subcategory1") String subcategory1,
-            @RequestParam(name = "page", defaultValue = "0") @PositiveOrZero int page,
-            @RequestParam(name = "size", defaultValue = "10") @PositiveOrZero int size,
-            @RequestParam(name = "sort", defaultValue = "desc") String sorting,
-            @RequestParam(name = "sortBy", defaultValue = "time") String sortBy) // name prize  potem można dodac popularność
-    {
-        List<Category> listOfCategories = getListOfCategories(category, subcategory1, "");
-        Pageable pageable = setPaging(page, size, sorting, sortBy);
-        return getProducts(listOfCategories, pageable);
+    @RequestMapping(path = "/{section}/{category}", method = RequestMethod.GET)
+    public ResponseEntity<Page<ProductModel>> getAllSubcategoriesInCategory(
+            @PathVariable(name = "section") String section,
+            @PathVariable(name = "category") String category) {
+        return reimplement;
     }
+
 
     /**
      * w tej metodzie wszyskie kategorie są podane jako stringi
      */
-    @RequestMapping(path = "/{category}/{subcategory1}/{subcategory2}", method = RequestMethod.GET)
-    public ResponseEntity<Page<ProductModel>> getAllProductsInSubSubCategory(
+    @RequestMapping(path = "/{section}/{category}/{subcategory}", method = RequestMethod.GET)
+    public ResponseEntity<Page<ProductModel>> getAllProductsInSubCategory(
+            @PathVariable(name = "section") String section,
             @PathVariable(name = "category") String category,
-            @PathVariable(name = "subcategory1") String subcategory1,
-            @PathVariable(name = "subcategory2") String subcategory2,
+            @PathVariable(name = "subcategory") String subcategory,
             @RequestParam(name = "page", defaultValue = "0") @PositiveOrZero int page,
             @RequestParam(name = "size", defaultValue = "10") @PositiveOrZero int size,
-            @RequestParam(name = "sort", defaultValue = "desc") String sorting,
-            @RequestParam(name = "sortBy", defaultValue = "time") String sortBy)
+            @RequestParam(name = "sort", defaultValue = "d") String sorting,
+            @RequestParam(name = "sortBy", defaultValue = "productName") String sortBy)
     {
-        List<Category> listOfCategories = getListOfCategories(category, subcategory1, subcategory2);
-        Pageable pageable = setPaging(page, size, sorting, sortBy);
+        List<Category> listOfCategories = controllerUtil.getListOfCategories(section, category, subcategory);
+        Pageable pageable = controllerUtil.setPaging(page, size, sorting, sortBy);
         return getProducts(listOfCategories, pageable);
     }
 
-
-    /**
-     * wyłuskuje z db obiekty categorii jakie spełniją dana ścieżka
-     */
-    private List<Category> getListOfCategories(String category, String subcategory1, String subcategory2) {
-        Category cat = new Category(category, subcategory1, subcategory2);
-        Example<Category> example = Example.of(cat);
-        return categoryRepository.findAll(example);
-    }
-
-
-    /**
-     * ustaawia paging wyświtlanej storny z danymi
-     */
-    private Pageable setPaging(int page, int size, String sorting, String... sortBy) {
-        Sort sort;
-        if (sorting.equals("asc"))
-            sort = Sort.by(Sort.Direction.ASC, sortBy);
-        else
-            sort = Sort.by(Sort.Direction.DESC, sortBy);
-        return  PageRequest.of(page, size, sort);
-    }
 
     /**
      * ta metoda wczytuje mniej danych z DB przez co mniej obciąża pamięć,
@@ -121,7 +94,7 @@ public class ProductController {
     private ResponseEntity<Page<ProductModel>> getProducts(List<Category> listOfCategories, Pageable pageable) {
         if ( !listOfCategories.isEmpty() ) {
             Page<Product> listOfProducts = productRepository.findAllProductsInTheseCategories(
-                    listOfCategories,pageable);
+                    listOfCategories, pageable);
             if (listOfProducts.getTotalElements() == 0)
                 return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
             ProductModelAssembler assembler = new ProductModelAssembler();
@@ -153,13 +126,37 @@ public class ProductController {
     }
 
 
+
+    // TODO to co trzeba znaleźć to mechanizm przeniesienia obiektu categorii na
+    //  odpowienie repozytorium. czyli znaleźć mapowanie categorii na repozytorium.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     /**
+     * TODO potem zmienić na ? extends RepresentationModel<?>
      * Metoda zwraca produkt
      * @param id identyfikator produktu
      * @return Obiekt Produktu
      */
     @RequestMapping(path = "/{id}", method = RequestMethod.GET)
-    ResponseEntity<? extends RepresentationModel<?>> getProduct(@PathVariable Long id) {
+    ResponseEntity<ProductModel> getProduct(@PathVariable Long id) {
         if (productRepository.existsById(id)) {
             ProductModelAssembler assembler = new ProductModelAssembler();
             return ResponseEntity.status(HttpStatus.OK)
@@ -170,7 +167,9 @@ public class ProductController {
 
 
     /**
-     * Dodaj produkt do koszyka.
+     * Dodaj produkt do koszyka. TODO przeprojektować tak aby zamiast ścieżki i liczby
+     * obiektów do dodania do koszyka brał odpowiedni obiekt restowy i to z niego
+     * wyłuskiwać informacje.
      *
      * @param number liczba zamówionych produktów
      * @param id identyfikator produktu
@@ -196,10 +195,6 @@ public class ProductController {
      */
     @RequestMapping(path = "/{id}", method = RequestMethod.DELETE)
     public ResponseEntity<String> deleteProductFromCart(@PathVariable(name = "id") Long id) {
-
-
-
-
         if (productRepository.existsById(id)) {
             Product productToDelete = productRepository.getOne(id);
             if (shoppingCart.isProductPutInShoppingCart(productToDelete)) {
@@ -212,7 +207,7 @@ public class ProductController {
             }
             else
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body("Bad Request. There is no this product in shopping cart");
+                        .body("Bad Request. There is no current product in shopping cart");
         }
         else
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Page Not Found :( " +

@@ -8,5 +8,5 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "aio")
-public class AiO extends Computer {
+public final class AiO extends Computer {
 }

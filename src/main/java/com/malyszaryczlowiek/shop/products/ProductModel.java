@@ -2,7 +2,7 @@ package com.malyszaryczlowiek.shop.products;
 
 import org.springframework.hateoas.RepresentationModel;
 
-import java.math.BigDecimal;
+import java.util.Map;
 
 /**
  *
@@ -13,17 +13,25 @@ import java.math.BigDecimal;
 public class ProductModel extends RepresentationModel<ProductModel> {
 
     private final String productName;
-    private final BigDecimal prize;
+    private final String brand;
+    private final String prize;
     private final boolean accessed;
+    private final String section;
     private final String category;
+    private final String subcategory;
     private final Integer amountInStock;
+
+    private Map<String, String> mapOfSpecification;
 
 
     public ProductModel(Product product) {
         this.productName = product.getProductName();
-        this.prize = product.getPrize();
+        this.brand = product.getBrand().getBrandName();
+        this.prize = product.getPrize().toPlainString();
         this.accessed = product.isAccessed();
-        this.category = product.getCategory().getCategoryName();
+        this.section = product.getCategory().getSection();
+        this.category = product.getCategory().getCategory();
+        this.subcategory = product.getCategory().getSubcategory();
         this.amountInStock = product.getAmountInStock();
     }
 
@@ -31,7 +39,11 @@ public class ProductModel extends RepresentationModel<ProductModel> {
         return productName;
     }
 
-    public BigDecimal getPrize() {
+    public String getBrand() {
+        return brand;
+    }
+
+    public String getPrize() {
         return prize;
     }
 
@@ -45,5 +57,21 @@ public class ProductModel extends RepresentationModel<ProductModel> {
 
     public Integer getAmountInStock() {
         return amountInStock;
+    }
+
+    public String getSection() {
+        return section;
+    }
+
+    public String getSubcategory() {
+        return subcategory;
+    }
+
+    public Map<String, String> getMapOfSpecification() {
+        return mapOfSpecification;
+    }
+
+    public void setMapOfSpecification(Map<String, String> mapOfSpecification) {
+        this.mapOfSpecification = mapOfSpecification;
     }
 }

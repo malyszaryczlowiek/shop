@@ -12,5 +12,5 @@ import javax.persistence.Table;
 @Inheritance(strategy = InheritanceType.JOINED)
 @Table(name = "computers")
 public class Computer extends Product {
-
+    // tutaj wszystkie cechy charakterystyczne dla komputerów jak CPU, RAM itd
 }

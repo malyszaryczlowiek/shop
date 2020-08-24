@@ -12,17 +12,17 @@ import java.util.List;
 @Transactional
 public interface CategoryRepository extends JpaRepository<Category, Long> {
 
-    @Query("SELECT c FROM Category c WHERE c.categoryName=:categoryName")
+    @Query("SELECT c FROM Category c WHERE c.section=:categoryName")
     List<Category> findAllCategoriesWithGivenCategoryName(
             @Param(value = "categoryName") String categoryName);
 
 
-    @Query("SELECT c FROM Category c WHERE c.subcategory1=:subcategory1")
+    @Query("SELECT c FROM Category c WHERE c.category=:subcategory1")
     List<Category> findAllCategoriesWithGivenSubcategory1(
             @Param(value = "subcategory1") String subcategory1);
 
 
-    @Query("SELECT c FROM Category c WHERE c.subcategory2=:subcategory2")
+    @Query("SELECT c FROM Category c WHERE c.subcategory=:subcategory2")
     List<Category> findAllCategoriesWithGivenSubcategory2(
             @Param(value = "subcategory2") String subcategory2);
 }

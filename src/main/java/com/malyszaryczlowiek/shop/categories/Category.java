@@ -1,15 +1,13 @@
 package com.malyszaryczlowiek.shop.categories;
 
-import com.malyszaryczlowiek.shop.products.Product;
-
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
-import java.util.List;
+
 
 
 @Entity
-@Table(name = "main_category")
+@Table(name = "category_table")
 public class Category {
 
     @Id
@@ -20,20 +18,20 @@ public class Category {
 
     @NotEmpty
     @NotBlank
-    @Column(name = "category_name", nullable = false)
-    private String categoryName;
+    @Column(name = "section", nullable = false)
+    private String section;
 
 
     @NotEmpty
     @NotBlank
-    @Column(name = "1st_subcategory", nullable = false)
-    private String subcategory1;
+    @Column(name = "category", nullable = false)
+    private String category;
 
 
     @NotEmpty
     @NotBlank
-    @Column(name = "2nd_subcategory", unique = true, nullable = false)
-    private String subcategory2;
+    @Column(name = "subcategory", unique = true, nullable = false)
+    private String subcategory;
 
 
     /*
@@ -49,12 +47,12 @@ public class Category {
 
     public Category() {}
 
-    public Category(@NotEmpty @NotBlank String categoryName,
-                    @NotEmpty @NotBlank String subcategory1,
-                    @NotEmpty @NotBlank String subcategory2) {
-        this.categoryName = categoryName;
-        this.subcategory1 = subcategory1;
-        this.subcategory2 = subcategory2;
+    public Category(@NotEmpty @NotBlank String section,
+                    @NotEmpty @NotBlank String category,
+                    @NotEmpty @NotBlank String subcategory) {
+        this.section = section;
+        this.category = category;
+        this.subcategory = subcategory;
     }
 
     public Long getId() {
@@ -65,27 +63,27 @@ public class Category {
         this.id = id;
     }
 
-    public String getCategoryName() {
-        return categoryName;
+    public String getSection() {
+        return section;
     }
 
-    public void setCategoryName(String categoryName) {
-        this.categoryName = categoryName;
+    public void setSection(String categoryName) {
+        this.section = categoryName;
     }
 
-    public String getSubcategory1() {
-        return subcategory1;
+    public String getCategory() {
+        return category;
     }
 
-    public void setSubcategory1(String subcategory1) {
-        this.subcategory1 = subcategory1;
+    public void setCategory(String subcategory1) {
+        this.category = subcategory1;
     }
 
-    public String getSubcategory2() {
-        return subcategory2;
+    public String getSubcategory() {
+        return subcategory;
     }
 
-    public void setSubcategory2(String subcategory2) {
-        this.subcategory2 = subcategory2;
+    public void setSubcategory(String subcategory2) {
+        this.subcategory = subcategory2;
     }
 }
