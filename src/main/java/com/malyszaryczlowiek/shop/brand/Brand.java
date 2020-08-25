@@ -15,7 +15,7 @@ public class Brand {
     private Long id;
 
 
-    @Column(name = "brand_name")
+    @Column(name = "brand_name", unique = true, nullable = false)
     private String brandName;
 
 

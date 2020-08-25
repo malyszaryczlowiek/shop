@@ -16,6 +16,9 @@ public interface SmartphoneRepository extends JpaRepository<Smartphone, Long> {
     @Query("SELECT s FROM Smartphone s WHERE s.brand=:brand ")
     List<Smartphone> findAllWithBrand(@Param(value = "brand") Brand brand);
 
+    @Query("SELECT s FROM Smartphone s WHERE s.brand.brandName=:brand ")
+    List<Smartphone> findAllWithBrandName(@Param(value = "brand") String brand);
+
 
     @Query("SELECT DISTINCT(s.screenRefreshing) FROM Smartphone s")
     List<String> findAllScreenRefreshingOptions();

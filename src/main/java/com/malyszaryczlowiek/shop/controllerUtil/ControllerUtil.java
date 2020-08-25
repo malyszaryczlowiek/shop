@@ -10,6 +10,12 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+
+zribić to abstrakcyjne i stworzyć dwie metody tworzące Mapę
+z danymi  encji
+jedna z implementacją która bierze dane z Producta
+druga abstrakcyjna którą trzeba nadpisać
+
 @Component
 public class ControllerUtil {
 
@@ -41,5 +47,8 @@ public class ControllerUtil {
         logger.debug("Number of Categories object : " + categoryList.size());
         return categoryList;
     }
+
+
+
 
 }

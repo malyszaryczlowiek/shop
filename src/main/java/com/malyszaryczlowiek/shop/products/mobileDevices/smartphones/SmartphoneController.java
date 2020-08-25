@@ -3,8 +3,8 @@ package com.malyszaryczlowiek.shop.products.mobileDevices.smartphones;
 
 import com.malyszaryczlowiek.shop.brand.Brand;
 import com.malyszaryczlowiek.shop.brand.BrandRepository;
+import com.malyszaryczlowiek.shop.categories.CategoryModel;
 import com.malyszaryczlowiek.shop.controllerUtil.ControllerUtil;
-import com.malyszaryczlowiek.shop.products.Product;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -33,8 +33,9 @@ public class SmartphoneController {
     private final SmartphoneRepository smartphoneRepository;
     private final BrandRepository brandRepository;
 
-
-    private final List<String> brandOptions;
+    tutaj trzeba jeszcze pomyśleć jak to wczytywać przy wyszukiwaniu
+    oraz patrz CategoryModel do zaimplementowania.
+    //private final List<String> brandOptions;
     private final List<String> screenRefreshingOptions;
 
     /**
@@ -52,12 +53,15 @@ public class SmartphoneController {
         this.screenRefreshingOptions = smartphoneRepository.findAllScreenRefreshingOptions();
     }
 
-
+    /**
+     * Wyszukiwanie po parametrach zapytania należy zrobić tak, że wszelkie dane, w encji
+     * Smartphone które też są encjami trzeba wyszukać po id ? natomiast
+     */
     @RequestMapping(path = "/search",method = RequestMethod.GET)
     public ResponseEntity<Page<SmartphoneModel>> searchSmartphones(
             @RequestParam(name = "prl", defaultValue = "0", required = false) String prizeMin,
             @RequestParam(name = "prm", defaultValue = "", required = false) String prizeMax,
-            @RequestParam(name = "br", defaultValue = "0", required = false) Long brand, // id w bazie danych zaczyna się od 1
+            @RequestParam(name = "br", required = false) List<String> brand, // id w bazie danych zaczyna się od 1
             @RequestParam(name = "sr", defaultValue = "", required = false) String screenRefreshing,
             // dane do paginacji
             @RequestParam(name = "page", defaultValue = "0") @PositiveOrZero int pageSize,
@@ -68,11 +72,13 @@ public class SmartphoneController {
         // w pierwszej kolejności tworzymy obiekty encji potrzebne do przeprowadzenia
         // wyszukiwania w bazie danych, bo w przeciwnym przypadku w trakcie filtrowania
         // takich zapytań wykonalibyśmy tysiące co widocznie by spowolniło działanie systemu.
-        Brand productBrand;
+        List<String> brandNames = brandRepository.findAllDistinctBrandNames();
+        // Brand productBrand;
         Stream<Smartphone> productStream;
-        if (brand < 1) {
-            productBrand = brandRepository.getOne(brand);
-            productStream = smartphoneRepository.findAllWithBrand(productBrand).parallelStream();
+        if (brandNames.contains(brand)) { //brandRepository.existsById(brand)
+            //productBrand = brandRepository.getOne(brand);
+            //productStream = smartphoneRepository.findAllWithBrand(productBrand).parallelStream();
+            productStream = smartphoneRepository.findAllWithBrandName(brand).parallelStream();
         } else productStream = smartphoneRepository.findAll().parallelStream();
         final BigDecimal pMin = new BigDecimal(prizeMin);
         BigDecimal pMax = null;
@@ -94,12 +100,9 @@ public class SmartphoneController {
         Page<SmartphoneModel> page = new PageImpl<>(foundProducts, pageable, foundProducts.size());
         if (page.getTotalElements() == 0)
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-
-
-
-
-        return null;
+        return ResponseEntity.status(HttpStatus.OK).body(page);
     }
+
 
     @RequestMapping(path = "/{id}")
     public ResponseEntity<SmartphoneModel> getProduct(@PathVariable Long id) {
