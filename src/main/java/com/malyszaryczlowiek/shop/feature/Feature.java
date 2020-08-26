@@ -1,12 +1,11 @@
 package com.malyszaryczlowiek.shop.feature;
 
 import com.malyszaryczlowiek.shop.categories.Category;
-import com.malyszaryczlowiek.shop.products.Product;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
-import java.util.List;
+
 
 @Entity
 @Table(name = "feature")
@@ -41,9 +40,12 @@ public class Feature {
 
     /**
      * lista produktów która posiada daną cechę.
+     * Na tę chwilę można z tego zrezygnować i posiłkować się repozytorium
+     * w którym w SQL'a będziemy wstrzykiwali cechę którą będzie musiał znaleźć
+     *
      */
-    @OneToMany()
-    private List<Product> products;
+    //@OneToMany
+    //private List<Product> products;
 
 
     public Feature() {}

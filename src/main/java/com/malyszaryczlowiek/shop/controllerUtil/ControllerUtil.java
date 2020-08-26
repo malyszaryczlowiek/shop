@@ -41,7 +41,7 @@ public class ControllerUtil {
      * wyłuskuje z db obiekty categorii jakie spełniją dana ścieżka
      */
     public List<Category> getListOfCategories(String section, String category, String subcategory) {
-        Category cat = new Category(section, category, subcategory);
+        //Category cat = new Category(section, category, subcategory);
         Example<Category> example = Example.of(cat);
         List<Category> categoryList = categoryRepository.findAll(example);
         logger.debug("Number of Categories object : " + categoryList.size());

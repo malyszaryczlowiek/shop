@@ -1,8 +1,11 @@
 package com.malyszaryczlowiek.shop.products;
 
 import com.malyszaryczlowiek.shop.categories.Category;
+import com.malyszaryczlowiek.shop.categories.CategoryModel;
+import com.malyszaryczlowiek.shop.categories.CategoryModelAssembler;
 import com.malyszaryczlowiek.shop.categories.CategoryRepository;
 import com.malyszaryczlowiek.shop.controllerUtil.ControllerUtil;
+import com.malyszaryczlowiek.shop.model.GeneralModelAssemblerAbstraction;
 import com.malyszaryczlowiek.shop.shoppingCart.ShoppingCart;
 
 import org.slf4j.Logger;
@@ -48,11 +51,15 @@ public class ProductController {
      * to jest metoda z null string jako kategorią.
      */
     @RequestMapping(path = "/{section}", method = RequestMethod.GET)
-    public ResponseEntity<Page<ProductModel>> getAllCategoriesInSection(
+    public ResponseEntity<CategoryModel> getAllCategoriesInSection(
             @PathVariable(name = "section") String section) {
-        zrobić refactoring metody,
-            tak aby zwracała tylko linki do categorii,
-        return reimplement;
+        // linki do categorii w danej sekcji
+        List<Category> categories = categoryRepository.findAllCategoriesInGivenSection(section);
+
+
+        CategoryModelAssembler assembler = new CategoryModelAssembler();
+
+        return ResponseEntity.status(HttpStatus.OK).body(assembler.);
     }
 
 
@@ -75,6 +82,7 @@ public class ProductController {
             @PathVariable(name = "section") String section,
             @PathVariable(name = "category") String category,
             @PathVariable(name = "subcategory") String subcategory,
+            // ustawienia strony
             @RequestParam(name = "page", defaultValue = "0") @PositiveOrZero int page,
             @RequestParam(name = "size", defaultValue = "10") @PositiveOrZero int size,
             @RequestParam(name = "sort", defaultValue = "d") String sorting,

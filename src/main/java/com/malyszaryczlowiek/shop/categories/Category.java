@@ -5,7 +5,18 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 
 
-
+/**
+ *
+ * <b>Deskryptory:</b> <p>
+ * jeśli sekcja nosi nazwę: "Laptopy i komputery"
+ * to jej deskryptor powinien wyglądać:
+ * "laptopy_i_komputery"
+ * <p>
+ * W przypadku występowania polskich znaków należy
+ * użyć znaku bez polskiej końcówki. Przykład:
+ * "Podzespoły komputerowe" na
+ * "podzespoly_komputerowe".
+ */
 @Entity
 @Table(name = "category_table")
 public class Category {
@@ -24,14 +35,32 @@ public class Category {
 
     @NotEmpty
     @NotBlank
+    @Column(name = "section_descriptor", nullable = false)
+    private String sectionDescriptor;
+
+
+    @NotEmpty
+    @NotBlank
     @Column(name = "category", nullable = false)
     private String category;
 
 
     @NotEmpty
     @NotBlank
-    @Column(name = "subcategory", unique = true, nullable = false)
+    @Column(name = "category_descriptor", nullable = false)
+    private String categoryDescriptor;
+
+
+    @NotEmpty
+    @NotBlank
+    @Column(name = "subcategory", nullable = false)
     private String subcategory;
+
+
+    @NotEmpty
+    @NotBlank
+    @Column(name = "subcategory_descriptor", nullable = false)
+    private String subcategoryDescriptor;
 
 
     /*
@@ -47,12 +76,15 @@ public class Category {
 
     public Category() {}
 
-    public Category(@NotEmpty @NotBlank String section,
-                    @NotEmpty @NotBlank String category,
-                    @NotEmpty @NotBlank String subcategory) {
+    public Category(@NotEmpty @NotBlank String section, @NotEmpty @NotBlank String sectionDescriptor,
+                    @NotEmpty @NotBlank String category, @NotEmpty @NotBlank String categoryDescriptor,
+                    @NotEmpty @NotBlank String subcategory, @NotEmpty @NotBlank String subcategoryDescriptor) {
         this.section = section;
+        this.sectionDescriptor = sectionDescriptor;
         this.category = category;
+        this.categoryDescriptor = categoryDescriptor;
         this.subcategory = subcategory;
+        this.subcategoryDescriptor = subcategoryDescriptor;
     }
 
     public Long getId() {
@@ -85,5 +117,29 @@ public class Category {
 
     public void setSubcategory(String subcategory2) {
         this.subcategory = subcategory2;
+    }
+
+    public String getSectionDescriptor() {
+        return sectionDescriptor;
+    }
+
+    public void setSectionDescriptor(String sectionDescriptor) {
+        this.sectionDescriptor = sectionDescriptor;
+    }
+
+    public String getCategoryDescriptor() {
+        return categoryDescriptor;
+    }
+
+    public void setCategoryDescriptor(String categoryDescriptor) {
+        this.categoryDescriptor = categoryDescriptor;
+    }
+
+    public String getSubcategoryDescriptor() {
+        return subcategoryDescriptor;
+    }
+
+    public void setSubcategoryDescriptor(String subcategoryDescriptor) {
+        this.subcategoryDescriptor = subcategoryDescriptor;
     }
 }

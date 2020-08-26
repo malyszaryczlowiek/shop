@@ -13,6 +13,8 @@ public class SmartphoneModelAssembler implements RepresentationModelAssembler<Sm
 
     @Override
     public CollectionModel<SmartphoneModel> toCollectionModel(Iterable<? extends Smartphone> entities) {
+
+
         return null;
     }
 

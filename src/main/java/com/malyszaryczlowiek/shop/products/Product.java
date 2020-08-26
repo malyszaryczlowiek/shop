@@ -7,10 +7,15 @@ import com.malyszaryczlowiek.shop.feature.Feature;
 import javax.persistence.*;
 import javax.validation.constraints.*;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 
 /**
+ *
+ *
+ * Poniżej stara dokumentacja
+ *
  * Encja zawierająca podstawwowe dane jakie powinien zawierać każdy
  * produkt.
  *
@@ -25,22 +30,150 @@ import java.util.List;
  *
  */
 @Entity
-@Inheritance(strategy = InheritanceType.JOINED)
+//@Inheritance(strategy = InheritanceType.JOINED) // to było używane przy dziediczeniu po encjach.
 @Table(name = "general_products_informations")
-public abstract class Product {
+public class Product {
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "product_id", unique = true)
     private Long id;
 
-    @ManyToOne
-    private Feature bra;
+    /**
+     * cascade: dodaję tylko Persist tak aby przy dodawaniu nowego
+     * produktu, który nie pasuje jeszcze do żadnej kategorii,
+     * żeby nowa kategoria od razu była dodwana do DB.
+     * <p>
+     * TODO sprawdzić jeszcze mergowanie i refreshowanie czy są bezpieczne.
+     */
+    @NotNull
+    @ManyToOne(cascade = {CascadeType.PERSIST})
+    @Column(name = "category", nullable = false)
+    private Category category;
 
-    @ManyToOne
-    private Feature prodName;
+    @NotNull
+    @ManyToOne(cascade = {})
+    private Feature brand;
+
+    @NotNull
+    @ManyToOne(cascade = {})
+    private Feature productName;
+
+    @NotNull
+    @ManyToOne(cascade = {})
+    private Feature prize;
+
+    @NotNull
+    @ManyToOne(cascade = {})
+    private Feature accessed;
+
+    @NotNull
+    @ManyToOne(cascade = {})
+    private Feature amountInStock;
+
+    /**
+     * Z tego co pamiętam to trzeba zawsze ainicjlalizować listę
+     */
+    @ManyToMany
+    private List<Product> components = new ArrayList<>();
+
+    @OneToMany
+    private List<Feature> specification;
 
 
+
+    public Product() {}
+
+    public Product(@NotNull Category category, @NotNull Feature brand,
+                   @NotNull Feature productName, @NotNull Feature prize,
+                   @NotNull Feature accessed, @NotNull Feature amountInStock,
+                   List<Product> components) {
+        this.category = category;
+        this.brand = brand;
+        this.productName = productName;
+        this.prize = prize;
+        this.accessed = accessed;
+        this.amountInStock = amountInStock;
+        this.components = components;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+
+    public Feature getBrand() {
+        return brand;
+    }
+
+    public void setBrand(Feature brand) {
+        this.brand = brand;
+    }
+
+    public Feature getProductName() {
+        return productName;
+    }
+
+    public void setProductName(Feature productName) {
+        this.productName = productName;
+    }
+
+    public Feature getPrize() {
+        return prize;
+    }
+
+    public void setPrize(Feature prize) {
+        this.prize = prize;
+    }
+
+    public Feature getAccessed() {
+        return accessed;
+    }
+
+    public void setAccessed(Feature accessed) {
+        this.accessed = accessed;
+    }
+
+    public Feature getAmountInStock() {
+        return amountInStock;
+    }
+
+    public void setAmountInStock(Feature amountInStock) {
+        this.amountInStock = amountInStock;
+    }
+
+    public List<Product> getComponents() {
+        return components;
+    }
+
+    public void setComponents(List<Product> components) {
+        this.components = components;
+    }
+}
+
+
+
+
+// TODO można jeszcze zdefiniowac popularność jako liczbę sprzedanych sztuk w ciągu ostatniego miesiąca
+// można też dodać parametr oznaczający promocję / nowość / ostatnie sztuki gdy jest mniej niż 5
+
+
+
+/*
+
+// old implementanion
 
     @NotNull
     @ManyToOne
@@ -69,92 +202,7 @@ public abstract class Product {
     @Column(name = "stock_amount", nullable = false)
     private Integer amountInStock = 1;
 
-    /**
-     * cascade: dodaję tylko Persist tak aby przy dodawaniu nowego
-     * produktu, który nie pasuje jeszcze do żadnej kategorii,
-     * żeby nowa kategoria od razu była dodwana do DB.
-     * <p>
-     * TODO sprawdzić jeszcze mergowanie i refreshowanie czy są bezpieczne.
-     */
-    @ManyToOne(cascade = {CascadeType.PERSIST})
-    @Column(name = "category", nullable = false)
-    private Category category;
-
-    /**
-     *
-     */
-    @ManyToMany
-    private List<Product> components;
-
-
-    public Product() {}
-
-    public Product(String productName, BigDecimal prize, Category category) {
-        this.productName = productName;
-        this.prize = prize;
-        this.category = category;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getProductName() {
-        return productName;
-    }
-
-    public void setProductName(String productName) {
-        this.productName = productName;
-    }
-
-    public Brand getBrand() {
-        return brand;
-    }
-
-    public void setBrand(Brand brand) {
-        this.brand = brand;
-    }
-
-    public BigDecimal getPrize() {
-        return prize;
-    }
-
-    public void setPrize(BigDecimal prize) {
-        this.prize = prize;
-    }
-
-    public boolean isAccessed() {
-        return accessed;
-    }
-
-    public void setAccessed(boolean accessed) {
-        this.accessed = accessed;
-    }
-
-    public Integer getAmountInStock() {
-        return amountInStock;
-    }
-
-    public void setAmountInStock(Integer amountInStock) {
-        this.amountInStock = amountInStock;
-    }
-
-    public Category getCategory() {
-        return category;
-    }
-
-    public void setCategory(Category category) {
-        this.category = category;
-    }
-}
-
-// TODO można jeszcze zdefiniowac popularność jako liczbę sprzedanych sztuk w ciągu ostatniego miesiąca
-// można też dodać parametr oznaczający promocję / nowość / ostatnie sztuki gdy jest mniej niż 5
-
+*/
 
 
 
