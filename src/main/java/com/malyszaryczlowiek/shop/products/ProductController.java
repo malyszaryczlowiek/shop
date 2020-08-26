@@ -156,7 +156,7 @@ public class ProductController {
      * @return Obiekt Produktu
      */
     @RequestMapping(path = "/{id}", method = RequestMethod.GET)
-    ResponseEntity<ProductModel> getProduct(@PathVariable Long id) {
+    public ResponseEntity<ProductModel> getProduct(@PathVariable Long id) {
         if (productRepository.existsById(id)) {
             ProductModelAssembler assembler = new ProductModelAssembler();
             return ResponseEntity.status(HttpStatus.OK)

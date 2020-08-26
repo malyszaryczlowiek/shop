@@ -2,10 +2,12 @@ package com.malyszaryczlowiek.shop.products;
 
 import com.malyszaryczlowiek.shop.brand.Brand;
 import com.malyszaryczlowiek.shop.categories.Category;
+import com.malyszaryczlowiek.shop.feature.Feature;
 
 import javax.persistence.*;
 import javax.validation.constraints.*;
 import java.math.BigDecimal;
+import java.util.List;
 
 
 /**
@@ -32,18 +34,25 @@ public abstract class Product {
     @Column(name = "product_id", unique = true)
     private Long id;
 
+    @ManyToOne
+    private Feature bra;
 
-    @NotEmpty
-    @NotBlank
-    @NotNull
-    @Column(name = "product_name", unique = true, nullable = false)
-    private String productName;
+    @ManyToOne
+    private Feature prodName;
+
 
 
     @NotNull
     @ManyToOne
     @Column(name = "brand")
     private Brand brand;
+
+
+    @NotEmpty
+    @NotBlank
+    @NotNull
+    @Column(name = "product_name", unique = true, nullable = false)
+    private String productName;
 
 
     @Digits(integer=5, fraction=2, message = "Incorrect prize value.")
@@ -70,6 +79,12 @@ public abstract class Product {
     @ManyToOne(cascade = {CascadeType.PERSIST})
     @Column(name = "category", nullable = false)
     private Category category;
+
+    /**
+     *
+     */
+    @ManyToMany
+    private List<Product> components;
 
 
     public Product() {}
