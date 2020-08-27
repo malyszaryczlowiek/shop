@@ -11,20 +11,20 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 
-zribić to abstrakcyjne i stworzyć dwie metody tworzące Mapę
-z danymi  encji
-jedna z implementacją która bierze dane z Producta
-druga abstrakcyjna którą trzeba nadpisać
+
 
 @Component
 public class ControllerUtil {
 
+    /*
     private final Logger logger = LoggerFactory.getLogger(ControllerUtil.class);
     private final CategoryRepository categoryRepository;
 
     public ControllerUtil(CategoryRepository categoryRepository) {
         this.categoryRepository = categoryRepository;
     }
+     */
+
 
     /**
      * TODO zmienić jeszcze sortowanie (sortBy) po odpowienich paramtrach
@@ -36,19 +36,18 @@ public class ControllerUtil {
         else sort = Sort.by(Sort.Direction.DESC, sortBy);
         return  PageRequest.of(page, size, sort);
     }
-
-    /**
-     * wyłuskuje z db obiekty categorii jakie spełniją dana ścieżka
-     */
-    public List<Category> getListOfCategories(String section, String category, String subcategory) {
-        //Category cat = new Category(section, category, subcategory);
-        Example<Category> example = Example.of(cat);
-        List<Category> categoryList = categoryRepository.findAll(example);
-        logger.debug("Number of Categories object : " + categoryList.size());
-        return categoryList;
-    }
-
-
-
-
 }
+
+
+/*
+
+     * wyłuskuje z db obiekty categorii jakie spełniją dana ścieżka
+
+public List<Category> getListOfCategories(String section, String category, String subcategory) {
+    //Category cat = new Category(section, category, subcategory);
+    Example<Category> example = Example.of(cat);
+    List<Category> categoryList = categoryRepository.findAll(example);
+    logger.debug("Number of Categories object : " + categoryList.size());
+    return categoryList;
+}
+ */

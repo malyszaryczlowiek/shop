@@ -67,7 +67,7 @@ public class Order {
     public String getTotalPrize() {
         BigDecimal totalPrize = BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP);
         for (ProductOrder productOrder : listOfProducts) {
-            BigDecimal productPrize = productOrder.getProduct().getPrize();
+            BigDecimal productPrize = new BigDecimal(productOrder.getProduct().getPrize().getFeatureValue());
             for (int i  = 0; i < productOrder.getNumberOfOrderedProducts(); ++i )
                 totalPrize.add(productPrize);
         }

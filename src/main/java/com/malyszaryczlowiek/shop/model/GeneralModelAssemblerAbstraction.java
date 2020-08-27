@@ -13,6 +13,7 @@ import java.util.List;
  *
  * @param <E> parametr encji
  */
+@Deprecated
 public abstract class GeneralModelAssemblerAbstraction<E> implements RepresentationModelAssembler<E, GeneralModel> {
 
     @Override

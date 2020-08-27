@@ -8,6 +8,7 @@ import javax.validation.constraints.NotEmpty;
 
 
 @Entity
+//@Inheritance(strategy = InheritanceType.JOINED) // to było używane przy dziediczeniu po encjach.
 @Table(name = "feature")
 public class Feature {
 
@@ -16,8 +17,8 @@ public class Feature {
     private Long id;
 
 
-    @ManyToOne
-    private Category category;
+    //@ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    //private Category category;
 
     /**
      * Descryptor, który jest używany w wyszukiwaniu w URLu.
@@ -25,19 +26,19 @@ public class Feature {
     @NotEmpty
     @NotBlank
     @Column(name = "searching_descriptor", nullable = false)
-    private String featureSearchingDescriptor; // eg. cpu
+    private String featureSearchingDescriptor; // eg. cpu, prize
 
 
     @NotEmpty
     @NotBlank
-    @Column(name = "feature_name", nullable = false) // eg. Procesor
+    @Column(name = "feature_name", nullable = false) // eg. Procesor, Prize
     private String featureName;
 
 
     @NotEmpty
     @NotBlank
     @Column(name = "feature_value", nullable = false)
-    private String featureValue; // eg. i9-9600K
+    private String featureValue; // eg. i9-9600K, 4999.00
 
 
     /**
@@ -52,11 +53,11 @@ public class Feature {
 
     public Feature() {}
 
-    public Feature(Category category,
+    public Feature(//Category category,
                    @NotEmpty @NotBlank String featureSearchingDescriptor,
                    @NotEmpty @NotBlank String featureName,
                    @NotEmpty @NotBlank String featureValue) {
-        this.category = category;
+        //this.category = category;
         this.featureSearchingDescriptor = featureSearchingDescriptor;
         this.featureName = featureName;
         this.featureValue = featureValue;
@@ -70,6 +71,7 @@ public class Feature {
         this.id = id;
     }
 
+    /*
     public Category getCategory() {
         return category;
     }
@@ -77,6 +79,8 @@ public class Feature {
     public void setCategory(Category category) {
         this.category = category;
     }
+     */
+
 
     public String getFeatureSearchingDescriptor() {
         return featureSearchingDescriptor;

@@ -37,8 +37,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
      */
     @Query("SELECT p FROM Product p WHERE p.category IN (:categoryList)")
     Page<Product> findAllProductsInTheseCategories(
-            @Param(value = "categoryList") List<Category> categoryList,
-            Pageable pageable);
+            @Param(value = "categoryList") List<Category> categoryList, Pageable pageable);
 
 
     @Query("SELECT p FROM Product p WHERE p.category IN (:categoryList)")
@@ -49,22 +48,19 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     /**
      * metody służące do wyłuskania produktów w danej kategorii.
      */
-    @Query("SELECT p FROM Product p WHERE p.category.section=:categoryName")
+    @Query("SELECT p FROM Product p WHERE p.category.section=:section")
     Page<Product> findAllProductsInMainCategory(
-            @Param(value = "categoryName") String categoryName,
-            Pageable pageable);
+            @Param(value = "section") String section, Pageable pageable);
 
 
     @Query("SELECT p FROM Product p WHERE p.category.category=:subcategory1")
     Page<Product> findAllProductsInSubCategory(
-            @Param(value = "subcategory1") String subcategory1,
-            Pageable pageable);
+            @Param(value = "subcategory1") String subcategory1, Pageable pageable);
 
 
     @Query("SELECT p FROM Product p WHERE p.category.subcategory=:subcategory2")
     Page<Product> findAllProductsInSubSubCategory(
-            @Param(value = "subcategory2") String subcategory2,
-            Pageable pageable);
+            @Param(value = "subcategory2") String subcategory2, Pageable pageable);
 }
 
 

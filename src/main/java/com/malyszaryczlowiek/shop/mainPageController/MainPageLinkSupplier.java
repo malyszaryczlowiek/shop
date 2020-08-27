@@ -42,7 +42,7 @@ public class MainPageLinkSupplier {
     }
 
 
-    public List<Link> supplyLinksToMainPage() {
+    public List<Link> supplyLinks() {
         return listOfLinks;
     }
 

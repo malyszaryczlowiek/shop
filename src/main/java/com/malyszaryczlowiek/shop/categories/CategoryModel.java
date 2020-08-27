@@ -15,7 +15,8 @@ public class CategoryModel extends RepresentationModel<CategoryModel> {
 
     public CategoryModel(List<Category> listOfCategories, boolean linksForSubcategories) {
         List<Link> links = new ArrayList<>(listOfCategories.size());
-        if (linksForSubcategories) { // tutaj generuję tylko linki do podkategorii. te linki zwracają produkty ukryte w kategoriakch
+        if (linksForSubcategories) { // tutaj generuję tylko linki do podkategorii.
+            // te linki zwracają produkty ukryte w kategoriakch
             for(Category cat: listOfCategories) {
                 // linki do kategorii
                 Link link = linkTo(methodOn(ProductController.class)

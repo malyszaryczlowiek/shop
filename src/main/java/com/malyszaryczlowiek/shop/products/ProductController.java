@@ -15,8 +15,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
+import java.util.Optional;
 
 
 @RestController
@@ -67,12 +67,13 @@ public class ProductController {
     public ResponseEntity<CategoryModel> getAllSubcategoriesInCategory(
             @PathVariable(name = "section") String section,
             @PathVariable(name = "category") String category) {
-        List<Category> categories = categoryRepository.findAllSubcategoriesInGivenCategory(section, category);
+        List<Category> categories = categoryRepository.findAllSubcategoriesInGivenSectionAndCategory(section, category);
         if (categories.isEmpty()) {
             logger.debug("jest empty - nie ma takiej sekcji");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
         CategoryModelAssembler assembler = new CategoryModelAssembler();
+        assembler.setSubcategoriesLinksFlag(true);
         return ResponseEntity.status(HttpStatus.OK).body(assembler.toModel(categories));
     }
 
@@ -86,7 +87,7 @@ public class ProductController {
             @PathVariable(name = "section") String section,
             @PathVariable(name = "category") String category,
             @PathVariable(name = "subcategory") String subcategory) {
-        List<Category> categories = controllerUtil.getListOfCategories(section, category, subcategory);
+        List<Category> categories = categoryRepository.findSubcategory(section, category, subcategory);
         if (categories.isEmpty()) {
             logger.debug("jest empty - nie ma takiej sekcji");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -94,13 +95,6 @@ public class ProductController {
         Pageable pageable = controllerUtil.setPaging(0, 20, "d", "productName");
         return getProducts(categories, pageable);
     }
-    /*
-    // ustawienia strony
-            @RequestParam(name = "page", defaultValue = "0") @PositiveOrZero int page,
-            @RequestParam(name = "size", defaultValue = "10") @PositiveOrZero int size,
-            @RequestParam(name = "sort", defaultValue = "d") String sorting,
-            @RequestParam(name = "sortBy", defaultValue = "productName") String sortBy
-     */
 
 
     /**
@@ -143,29 +137,6 @@ public class ProductController {
     }
 
 
-
-    // TODO to co trzeba znaleźć to mechanizm przeniesienia obiektu categorii na
-    //  odpowienie repozytorium. czyli znaleźć mapowanie categorii na repozytorium.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     /**
      * TODO potem zmienić na ? extends RepresentationModel<?>
      * Metoda zwraca produkt
@@ -188,17 +159,18 @@ public class ProductController {
      * obiektów do dodania do koszyka brał odpowiedni obiekt restowy i to z niego
      * wyłuskiwać informacje.
      *
-     * @param number liczba zamówionych produktów
+     * @param amountOfOrderedProducts liczba zamówionych produktów
      * @param id identyfikator produktu
      * @return np informacja o dodaniu do koszyka
      */
     @RequestMapping(path = "/{id}", method = RequestMethod.PUT)
-    public ResponseEntity<String> putProductToShoppingCart(@RequestBody Integer number, @PathVariable Long id) {
+    public ResponseEntity<String> putProductToShoppingCart(
+            @RequestBody Integer amountOfOrderedProducts, @PathVariable Long id) {
         if (productRepository.existsById(id)) {
             Product product = productRepository.getOne(id);
-            shoppingCart.addProduct(product,number);
+            shoppingCart.addProduct(product,amountOfOrderedProducts);
             return ResponseEntity.status(HttpStatus.ACCEPTED)
-                    .body("Product in number of " + number + " added to shopping cart.");
+                    .body("Product in number of " + amountOfOrderedProducts + " added to shopping cart.");
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
@@ -231,3 +203,13 @@ public class ProductController {
                     "There is no such product.");
     }
 }
+
+
+
+/*
+    // ustawienia strony
+            @RequestParam(name = "page", defaultValue = "0") @PositiveOrZero int page,
+            @RequestParam(name = "size", defaultValue = "10") @PositiveOrZero int size,
+            @RequestParam(name = "sort", defaultValue = "d") String sorting,
+            @RequestParam(name = "sortBy", defaultValue = "productName") String sortBy
+     */

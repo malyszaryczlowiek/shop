@@ -20,15 +20,5 @@ public class CategoryInitializer implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        logger.debug("starting initialization of Category");
-        // todo to implement
-        /*
-        smartfony: Android i iOS
-        computery: Desktop i AiO
-        televizory:
-         */
-
-
-
     }
 }

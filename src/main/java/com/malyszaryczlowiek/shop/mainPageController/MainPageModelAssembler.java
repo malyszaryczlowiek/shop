@@ -12,13 +12,10 @@ public class MainPageModelAssembler implements RepresentationModelAssembler<Obje
         this.linkSupplier = linkSupplier;
     }
 
-
-
-
     @Override
     public MainPageModel toModel(@Nullable Object entity) {
         MainPageModel model = new MainPageModel();
-        model.add(linkSupplier.supplyLinksToMainPage());
+        model.add(linkSupplier.supplyLinks());
         return model;
     }
 }

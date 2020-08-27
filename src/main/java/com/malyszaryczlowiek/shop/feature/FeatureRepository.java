@@ -8,6 +8,4 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public interface FeatureRepository extends JpaRepository<Feature, Long> {
 
-
-
 }

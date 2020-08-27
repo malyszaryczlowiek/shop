@@ -29,11 +29,6 @@ public class TestingFilter implements Filter {
 
     /**
      * w tej metodzie modyfikujemy wszysko co jest nam potrzebne.
-     * @param request
-     * @param response
-     * @param chain
-     * @throws IOException
-     * @throws ServletException
      */
     @Override
     public void doFilter(ServletRequest request,

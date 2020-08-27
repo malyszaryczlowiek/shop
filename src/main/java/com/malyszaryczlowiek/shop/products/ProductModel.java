@@ -1,8 +1,10 @@
 package com.malyszaryczlowiek.shop.products;
 
+import com.malyszaryczlowiek.shop.feature.Feature;
 import org.springframework.hateoas.RepresentationModel;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -21,8 +23,7 @@ public class ProductModel extends RepresentationModel<ProductModel> {
     private final String category;
     private final String subcategory;
     private final String amountInStock;
-
-    private Map<String, String> mapOfSpecification = new LinkedHashMap<>();
+    private final Map<String,String> specification = new LinkedHashMap<>();
 
 
     public ProductModel(Product product) {
@@ -34,6 +35,17 @@ public class ProductModel extends RepresentationModel<ProductModel> {
         this.category = product.getCategory().getCategory();
         this.subcategory = product.getCategory().getSubcategory();
         this.amountInStock = product.getAmountInStock().getFeatureValue();
+        setSpecification(product);
+    }
+
+    private void setSpecification(Product product) {
+        List<Feature> featureList = product.getSpecification();
+        for(Feature feature: featureList)
+            specification.put(feature.getFeatureName(), feature.getFeatureValue());
+        List<Product> subProducts = product.getComponents();
+        for (Product product1: subProducts)
+            specification.put(product1.getProductName().getFeatureName(),
+                    product1.getProductName().getFeatureValue());
     }
 
     public String getProductName() {
@@ -68,11 +80,11 @@ public class ProductModel extends RepresentationModel<ProductModel> {
         return subcategory;
     }
 
-    public Map<String, String> getMapOfSpecification() {
-        return mapOfSpecification;
+    public String getAccessed() {
+        return accessed;
     }
 
-    public void setMapOfSpecification(Map<String, String> mapOfSpecification) {
-        this.mapOfSpecification = mapOfSpecification;
+    public Map<String, String> getSpecification() {
+        return specification;
     }
 }

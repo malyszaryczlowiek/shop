@@ -5,6 +5,7 @@ import com.malyszaryczlowiek.shop.brand.Brand;
 import com.malyszaryczlowiek.shop.brand.BrandRepository;
 import com.malyszaryczlowiek.shop.categories.CategoryModel;
 import com.malyszaryczlowiek.shop.controllerUtil.ControllerUtil;
+import com.malyszaryczlowiek.shop.products.ProductRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -30,27 +31,13 @@ public class SmartphoneController {
     private final Logger logger = LoggerFactory.getLogger(SmartphoneController.class);
 
     private final ControllerUtil controllerUtil;
-    private final SmartphoneRepository smartphoneRepository;
-    private final BrandRepository brandRepository;
+    private final ProductRepository productRepository;
 
-    tutaj trzeba jeszcze pomyśleć jak to wczytywać przy wyszukiwaniu
-    oraz patrz CategoryModel do zaimplementowania.
-    //private final List<String> brandOptions;
-    private final List<String> screenRefreshingOptions;
-
-    /**
-     * kluczem są parametry rządania, a wartością lista możliwych wartości.
-     */
-    private final Map<String, List<String>> map = new HashMap<>();
 
     public SmartphoneController(ControllerUtil controllerUtil,
-                                SmartphoneRepository smartphoneRepository,
-                                BrandRepository brandRepository) {
+                                ProductRepository productRepository) {
         this.controllerUtil = controllerUtil;
-        this.smartphoneRepository = smartphoneRepository;
-        this.brandRepository = brandRepository;
-
-        this.screenRefreshingOptions = smartphoneRepository.findAllScreenRefreshingOptions();
+        this.productRepository = productRepository;
     }
 
     /**

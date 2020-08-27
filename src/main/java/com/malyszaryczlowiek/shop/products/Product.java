@@ -1,12 +1,10 @@
 package com.malyszaryczlowiek.shop.products;
 
-import com.malyszaryczlowiek.shop.brand.Brand;
 import com.malyszaryczlowiek.shop.categories.Category;
 import com.malyszaryczlowiek.shop.feature.Feature;
 
 import javax.persistence.*;
 import javax.validation.constraints.*;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,7 +30,7 @@ import java.util.List;
 @Entity
 //@Inheritance(strategy = InheritanceType.JOINED) // to było używane przy dziediczeniu po encjach.
 @Table(name = "general_products_informations")
-public class Product {
+public class Product {//} extends Feature {
 
 
     @Id
@@ -73,13 +71,13 @@ public class Product {
     private Feature amountInStock;
 
     /**
-     * Z tego co pamiętam to trzeba zawsze ainicjlalizować listę
+     * Z tego co pamiętam to trzeba zawsze zainicjlalizować listę
      */
     @ManyToMany
     private List<Product> components = new ArrayList<>();
 
     @OneToMany
-    private List<Feature> specification;
+    private List<Feature> specification = new ArrayList<>();
 
 
 
@@ -160,6 +158,14 @@ public class Product {
 
     public void setComponents(List<Product> components) {
         this.components = components;
+    }
+
+    public List<Feature> getSpecification() {
+        return specification;
+    }
+
+    public void setSpecification(List<Feature> specification) {
+        this.specification = specification;
     }
 }
 

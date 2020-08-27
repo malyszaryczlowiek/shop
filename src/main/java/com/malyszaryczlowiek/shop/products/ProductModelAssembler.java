@@ -24,16 +24,6 @@ public class ProductModelAssembler implements RepresentationModelAssembler<Produ
         return model;
     }
 
-    /*
-    TODO aby móc korzystać z kontrolerów specyficznych dla danej podkategorii
-    trzeba wyłuskiwać obiekt kategorii i porównywac go z
-
-    sprawdzić czy rest controllery mogą dziedziczyć po jakiejść innej klasie
-    i czy wtedy możemy skorzystać z polimorfizmu.
-     */
-
-
-
 
     /**
      * TODO napisać test sprawdzający poprawność działania metody.
@@ -41,12 +31,10 @@ public class ProductModelAssembler implements RepresentationModelAssembler<Produ
     @Override
     public CollectionModel<ProductModel> toCollectionModel(Iterable<? extends Product> entities) {
         int sizeOfCollection = 0;
-        for (Product entity : entities)
-            ++sizeOfCollection;
+        for (Product entity : entities) ++sizeOfCollection;
         Iterator<? extends Product> iterator = entities.iterator();
         List<ProductModel> list = new ArrayList<>(sizeOfCollection);
-        while (iterator.hasNext())
-            list.add(toModel(iterator.next()));
+        while (iterator.hasNext()) list.add(toModel(iterator.next()));
         return CollectionModel.of(list);
     }
 
@@ -68,8 +56,6 @@ public class ProductModelAssembler implements RepresentationModelAssembler<Produ
         );
     }
 }
-
-
 
 
 
