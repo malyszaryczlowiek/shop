@@ -19,7 +19,9 @@ public class Feature {
     @ManyToOne
     private Category category;
 
-
+    /**
+     * Descryptor, który jest używany w wyszukiwaniu w URLu.
+     */
     @NotEmpty
     @NotBlank
     @Column(name = "searching_descriptor", nullable = false)

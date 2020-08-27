@@ -17,14 +17,15 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
             @Param(value = "section") String section);
 
 
-    @Query("SELECT c FROM Category c WHERE c.category=:subcategory1")
-    List<Category> findAllCategoriesWithGivenSubcategory1(
-            @Param(value = "subcategory1") String subcategory1);
+    @Query("SELECT c FROM Category c WHERE c.category=:category AND c.section=:section")
+    List<Category> findAllSubcategoriesInGivenCategory(
+            @Param(value = "section") String section,
+            @Param(value = "category") String category);
 
 
-    @Query("SELECT c FROM Category c WHERE c.subcategory=:subcategory2")
-    List<Category> findAllCategoriesWithGivenSubcategory2(
-            @Param(value = "subcategory2") String subcategory2);
+    @Query("SELECT c FROM Category c WHERE c.subcategory=:subcategory")
+    List<Category> findAllSubcategoriesWithGivenCategoryAndSection(
+            @Param(value = "subcategory") String subcategory);
 
     @Query("SELECT DISTINCT(c.category) FROM Category c WHERE c.section=:section ORDER BY c.category")
     List<String> getCategoryDescriptorsOfGivenSection(@Param(value = "section") String section);

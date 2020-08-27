@@ -7,7 +7,7 @@ import javax.validation.constraints.NotEmpty;
 
 /**
  *
- * <b>Deskryptory:</b> <p>
+ * <b>Deskryptory:</b><p>
  * jeśli sekcja nosi nazwę: "Laptopy i komputery"
  * to jej deskryptor powinien wyglądać:
  * "laptopy_i_komputery"

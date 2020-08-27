@@ -5,7 +5,6 @@ import com.malyszaryczlowiek.shop.categories.CategoryModel;
 import com.malyszaryczlowiek.shop.categories.CategoryModelAssembler;
 import com.malyszaryczlowiek.shop.categories.CategoryRepository;
 import com.malyszaryczlowiek.shop.controllerUtil.ControllerUtil;
-import com.malyszaryczlowiek.shop.model.GeneralModelAssemblerAbstraction;
 import com.malyszaryczlowiek.shop.shoppingCart.ShoppingCart;
 
 import org.slf4j.Logger;
@@ -31,9 +30,7 @@ public class ProductController {
     private final CategoryRepository categoryRepository;
     private final ShoppingCart shoppingCart;
 
-    /**
-     *
-     */
+
     @Autowired
     public ProductController(
             ControllerUtil controllerUtil,
@@ -53,13 +50,13 @@ public class ProductController {
     @RequestMapping(path = "/{section}", method = RequestMethod.GET)
     public ResponseEntity<CategoryModel> getAllCategoriesInSection(
             @PathVariable(name = "section") String section) {
-        // linki do categorii w danej sekcji
         List<Category> categories = categoryRepository.findAllCategoriesInGivenSection(section);
-
-
+        if (categories.isEmpty()) {
+            logger.debug("jest empty - nie ma takiej sekcji");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
         CategoryModelAssembler assembler = new CategoryModelAssembler();
-
-        return ResponseEntity.status(HttpStatus.OK).body(assembler.);
+        return ResponseEntity.status(HttpStatus.OK).body(assembler.toModel(categories));
     }
 
 
@@ -67,31 +64,43 @@ public class ProductController {
      * to jest metoda z empty string jako kategorią.
      */
     @RequestMapping(path = "/{section}/{category}", method = RequestMethod.GET)
-    public ResponseEntity<Page<ProductModel>> getAllSubcategoriesInCategory(
+    public ResponseEntity<CategoryModel> getAllSubcategoriesInCategory(
             @PathVariable(name = "section") String section,
             @PathVariable(name = "category") String category) {
-        return reimplement;
+        List<Category> categories = categoryRepository.findAllSubcategoriesInGivenCategory(section, category);
+        if (categories.isEmpty()) {
+            logger.debug("jest empty - nie ma takiej sekcji");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        CategoryModelAssembler assembler = new CategoryModelAssembler();
+        return ResponseEntity.status(HttpStatus.OK).body(assembler.toModel(categories));
     }
 
 
     /**
-     * w tej metodzie wszyskie kategorie są podane jako stringi
+     * Defaultowa metoda która wyłuskuje wszystkie produkty w danej podkategorii,
+     * bez jakiegokolwiek sortowania i  ustawień pagingu.
      */
     @RequestMapping(path = "/{section}/{category}/{subcategory}", method = RequestMethod.GET)
-    public ResponseEntity<Page<ProductModel>> getAllProductsInSubCategory(
+    public ResponseEntity<Page<ProductModel>> getAllProductsInSubcategory(
             @PathVariable(name = "section") String section,
             @PathVariable(name = "category") String category,
-            @PathVariable(name = "subcategory") String subcategory,
-            // ustawienia strony
+            @PathVariable(name = "subcategory") String subcategory) {
+        List<Category> categories = controllerUtil.getListOfCategories(section, category, subcategory);
+        if (categories.isEmpty()) {
+            logger.debug("jest empty - nie ma takiej sekcji");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        Pageable pageable = controllerUtil.setPaging(0, 20, "d", "productName");
+        return getProducts(categories, pageable);
+    }
+    /*
+    // ustawienia strony
             @RequestParam(name = "page", defaultValue = "0") @PositiveOrZero int page,
             @RequestParam(name = "size", defaultValue = "10") @PositiveOrZero int size,
             @RequestParam(name = "sort", defaultValue = "d") String sorting,
-            @RequestParam(name = "sortBy", defaultValue = "productName") String sortBy)
-    {
-        List<Category> listOfCategories = controllerUtil.getListOfCategories(section, category, subcategory);
-        Pageable pageable = controllerUtil.setPaging(page, size, sorting, sortBy);
-        return getProducts(listOfCategories, pageable);
-    }
+            @RequestParam(name = "sortBy", defaultValue = "productName") String sortBy
+     */
 
 
     /**
