@@ -16,9 +16,13 @@ public class Feature {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-
-    //@ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    //private Category category;
+    /**
+     * kategoria musi być tutaj obecna tak aby nie dochodziło do kuriozów
+     * w strylu: szukaj po procesorze dla komputerów i będzie wyszukiwało
+     * po procesorze dla telefonów/urządzeń mobilnych.
+     */
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    private Category category;
 
     /**
      * Descryptor, który jest używany w wyszukiwaniu w URLu.
@@ -71,7 +75,7 @@ public class Feature {
         this.id = id;
     }
 
-    /*
+
     public Category getCategory() {
         return category;
     }
@@ -79,7 +83,6 @@ public class Feature {
     public void setCategory(Category category) {
         this.category = category;
     }
-     */
 
 
     public String getFeatureSearchingDescriptor() {

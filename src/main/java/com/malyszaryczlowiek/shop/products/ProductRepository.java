@@ -3,6 +3,7 @@ package com.malyszaryczlowiek.shop.products;
 
 import com.malyszaryczlowiek.shop.categories.Category;
 
+import com.malyszaryczlowiek.shop.feature.Feature;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -61,6 +62,13 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     @Query("SELECT p FROM Product p WHERE p.category.subcategory=:subcategory2")
     Page<Product> findAllProductsInSubSubCategory(
             @Param(value = "subcategory2") String subcategory2, Pageable pageable);
+
+    @Query("SELECT p FROM Product p WHERE p.specification IN(:spec)")
+    Page<Product> findAllProductsWithParameters(
+            @Param(value = "spec") List<Feature> spec, Pageable pageable);
+
+
+
 }
 
 

@@ -1,10 +1,9 @@
 package com.malyszaryczlowiek.shop.products.mobileDevices.smartphones;
 
 
-import com.malyszaryczlowiek.shop.brand.Brand;
-import com.malyszaryczlowiek.shop.brand.BrandRepository;
-import com.malyszaryczlowiek.shop.categories.CategoryModel;
+import com.malyszaryczlowiek.shop.categories.CategoryRepository;
 import com.malyszaryczlowiek.shop.controllerUtil.ControllerUtil;
+import com.malyszaryczlowiek.shop.products.Product;
 import com.malyszaryczlowiek.shop.products.ProductRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +14,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.PositiveOrZero;
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -23,8 +24,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@RestController
-@RequestMapping(path = "/product/mobile/smartphones")
+@Deprecated
+//@RestController
+//@RequestMapping(path = "/product/mobile/smartphones")
 public class SmartphoneController {
 
 
@@ -32,18 +34,43 @@ public class SmartphoneController {
 
     private final ControllerUtil controllerUtil;
     private final ProductRepository productRepository;
+    private final CategoryRepository categoryRepository;
 
 
     public SmartphoneController(ControllerUtil controllerUtil,
-                                ProductRepository productRepository) {
+                                ProductRepository productRepository,
+                                CategoryRepository categoryRepository) {
         this.controllerUtil = controllerUtil;
         this.productRepository = productRepository;
+        this.categoryRepository = categoryRepository;
     }
 
-    /**
+    @RequestMapping(path = "/search",method = RequestMethod.GET)
+    public ResponseEntity<Page<Product>> searchSmartphones(
+            //HttpServletResponse response,
+            HttpServletRequest request,
+            @RequestParam(name = "prl", defaultValue = "0", required = false) String prizeMin,
+            @RequestParam(name = "prm", defaultValue = "", required = false) String prizeMax,
+            @RequestParam(name = "br", required = false) List<String> brand, // id w bazie danych zaczyna się od 1
+            @RequestParam(name = "sr", defaultValue = "", required = false) String screenRefreshing,
+            // dane do paginacji
+            @RequestParam(name = "page", defaultValue = "0") @PositiveOrZero int pageSize,
+            @RequestParam(name = "size", defaultValue = "10") @PositiveOrZero int size,
+            @RequestParam(name = "sort", defaultValue = "d") String sorting,
+            @RequestParam(name = "sortBy", defaultValue = "productName") String sortBy) {
+        // skoro wiemy, że jesteśmy w tej ścierzce to pobieramy obiekt Categorii
+        //List<Category> category = categoryRepository.fin
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    }
+
+}
+
+/*
+
      * Wyszukiwanie po parametrach zapytania należy zrobić tak, że wszelkie dane, w encji
      * Smartphone które też są encjami trzeba wyszukać po id ? natomiast
-     */
+
     @RequestMapping(path = "/search",method = RequestMethod.GET)
     public ResponseEntity<Page<SmartphoneModel>> searchSmartphones(
             @RequestParam(name = "prl", defaultValue = "0", required = false) String prizeMin,
@@ -100,4 +127,4 @@ public class SmartphoneController {
         } else return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
-}
+ */

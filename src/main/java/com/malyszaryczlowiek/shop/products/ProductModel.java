@@ -1,6 +1,7 @@
 package com.malyszaryczlowiek.shop.products;
 
 import com.malyszaryczlowiek.shop.feature.Feature;
+
 import org.springframework.hateoas.RepresentationModel;
 
 import java.util.LinkedHashMap;

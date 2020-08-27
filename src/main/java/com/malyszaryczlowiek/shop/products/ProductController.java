@@ -97,6 +97,26 @@ public class ProductController {
     }
 
 
+
+    @RequestMapping(path = "/{section}/{category}/{subcategory}/search", method = RequestMethod.POST)
+    public ResponseEntity<Page<ProductModel>> getProductsFromSearchingCriteria(
+            @RequestBody SearchingCriteria searchingCriteria,
+            @PathVariable(name = "section") String section,
+            @PathVariable(name = "category") String category,
+            @PathVariable(name = "subcategory") String subcategory) {
+        List<Category> categories = categoryRepository.findSubcategory(section, category, subcategory);
+        if (categories.isEmpty()) {
+            logger.debug("jest empty - nie ma takiej sekcji");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        Pageable pageable = controllerUtil.setPaging(0, 20, "d", "productName");
+        return getProducts(categories, pageable);
+    }
+
+
+
+
+
     /**
      * ta metoda wczytuje mniej danych z DB przez co mniej obciąża pamięć,
      * ale za to zapytania do bazy są koszmarne i wyszukanie trwa
