@@ -11,9 +11,9 @@ import org.springframework.hateoas.RepresentationModel;
 public class ShoppingCartModel extends RepresentationModel<ShoppingCartModel> {
 
 
-    Not implemented
+    // TODO Not implemented
     public ShoppingCartModel(ShoppingCart shoppingCart) {
-        Tutaj przepisać całą wewnętrzną strukturę ShoppingCart na ten model
+        // Tutaj przepisać całą wewnętrzną strukturę ShoppingCart na ten model
 
     }
 

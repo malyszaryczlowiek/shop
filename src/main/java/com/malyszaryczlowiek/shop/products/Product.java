@@ -30,7 +30,7 @@ import java.util.List;
 @Entity
 //@Inheritance(strategy = InheritanceType.JOINED) // to było używane przy dziediczeniu po encjach.
 @Table(name = "general_products_informations")
-public class Product {//} extends Feature {
+public class Product { //extends Feature
 
 
     @Id
@@ -46,29 +46,33 @@ public class Product {//} extends Feature {
      * TODO sprawdzić jeszcze mergowanie i refreshowanie czy są bezpieczne.
      */
     @NotNull
-    @ManyToOne(cascade = {CascadeType.PERSIST})
-    @Column(name = "category", nullable = false)
-    private Category category;
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
+    //@Column(name = "category", nullable = false)
+    private Category productCategory;
+
+    /*
 
     @NotNull
-    @ManyToOne(cascade = {})
-    private Feature brand;
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
+    private Feature productBrand;
 
     @NotNull
-    @ManyToOne(cascade = {})
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
     private Feature productName;
 
     @NotNull
-    @ManyToOne(cascade = {})
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
     private Feature prize;
 
     @NotNull
-    @ManyToOne(cascade = {})
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
     private Feature accessed;
 
     @NotNull
-    @ManyToOne(cascade = {})
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
     private Feature amountInStock;
+     */
+
 
     /**
      * Z tego co pamiętam to trzeba zawsze zainicjlalizować listę
@@ -77,22 +81,26 @@ public class Product {//} extends Feature {
     private List<Product> components = new ArrayList<>();
 
     @OneToMany
-    private List<Feature> specification = new ArrayList<>();
+    private final List<Feature> specification = new ArrayList<>();
 
 
 
     public Product() {}
 
-    public Product(@NotNull Category category, @NotNull Feature brand,
+    public Product(@NotNull Category productCategory, @NotNull Feature productBrand,
                    @NotNull Feature productName, @NotNull Feature prize,
-                   @NotNull Feature accessed, @NotNull Feature amountInStock,
-                   List<Product> components) {
-        this.category = category;
-        this.brand = brand;
+                   @NotNull Feature accessed, @NotNull Feature amountInStock
+                   , List<Product> components
+    ) {
+        this.productCategory = productCategory;
+        /*
+        this.productBrand = productBrand;
         this.productName = productName;
         this.prize = prize;
         this.accessed = accessed;
         this.amountInStock = amountInStock;
+         */
+
         this.components = components;
     }
 
@@ -104,20 +112,21 @@ public class Product {//} extends Feature {
         this.id = id;
     }
 
-    public Category getCategory() {
-        return category;
+    public Category getProductCategory() {
+        return productCategory;
     }
 
-    public void setCategory(Category category) {
-        this.category = category;
+    public void setProductCategory(Category category) {
+        this.productCategory = category;
     }
 
-    public Feature getBrand() {
-        return brand;
+    /*
+    public Feature getProductBrand() {
+        return productBrand;
     }
 
-    public void setBrand(Feature brand) {
-        this.brand = brand;
+    public void setProductBrand(Feature brand) {
+        this.productBrand = brand;
     }
 
     public Feature getProductName() {
@@ -151,6 +160,9 @@ public class Product {//} extends Feature {
     public void setAmountInStock(Feature amountInStock) {
         this.amountInStock = amountInStock;
     }
+     */
+
+
 
     public List<Product> getComponents() {
         return components;
@@ -165,7 +177,7 @@ public class Product {//} extends Feature {
     }
 
     public void setSpecification(List<Feature> specification) {
-        this.specification = specification;
+        this.specification.addAll(specification);// = specification;
     }
 }
 

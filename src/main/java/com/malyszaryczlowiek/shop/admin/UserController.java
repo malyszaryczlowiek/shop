@@ -4,7 +4,6 @@ import com.malyszaryczlowiek.shop.client.Client;
 import com.malyszaryczlowiek.shop.client.ClientModelForAdmin;
 import com.malyszaryczlowiek.shop.client.ClientModelForAdminAssembler;
 import com.malyszaryczlowiek.shop.client.ClientRepository;
-import com.malyszaryczlowiek.shop.util.Path;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -24,11 +23,10 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final ClientRepository clientRepository;
-    private final Path path;
+
 
     @Autowired
-    UserController(ClientRepository clientRepository, Path path) {
-        this.path = path;
+    UserController(ClientRepository clientRepository) {
         this.clientRepository = clientRepository;
     }
 

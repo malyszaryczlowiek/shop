@@ -19,13 +19,13 @@ import java.util.List;
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
 
-    @Query("SELECT p FROM Product p WHERE p.category=:category")
+    @Query("SELECT p FROM Product p WHERE p.productCategory=:category")
     Page<Product> findAllProductsInThisCategory(
             @Param(value = "category") Category category,
             Pageable pageable);
 
 
-    @Query("SELECT p FROM Product p WHERE p.category=:category")
+    @Query("SELECT p FROM Product p WHERE p.productCategory=:category")
     List<Product> findAllProductsInThisCategory(
             @Param(value = "category") Category category);
 
@@ -36,12 +36,12 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     /**
      * tu można chyba zaminić listę na iterable
      */
-    @Query("SELECT p FROM Product p WHERE p.category IN (:categoryList)")
+    @Query("SELECT p FROM Product p WHERE p.productCategory IN (:categoryList)")
     Page<Product> findAllProductsInTheseCategories(
             @Param(value = "categoryList") List<Category> categoryList, Pageable pageable);
 
 
-    @Query("SELECT p FROM Product p WHERE p.category IN (:categoryList)")
+    @Query("SELECT p FROM Product p WHERE p.productCategory IN (:categoryList)")
     List<Product> findAllProductsInTheseCategories(
             @Param(value = "categoryList") List<Category> categoryList);
 
@@ -49,17 +49,17 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     /**
      * metody służące do wyłuskania produktów w danej kategorii.
      */
-    @Query("SELECT p FROM Product p WHERE p.category.section=:section")
+    @Query("SELECT p FROM Product p WHERE p.productCategory.section=:section")
     Page<Product> findAllProductsInMainCategory(
             @Param(value = "section") String section, Pageable pageable);
 
 
-    @Query("SELECT p FROM Product p WHERE p.category.category=:subcategory1")
+    @Query("SELECT p FROM Product p WHERE p.productCategory.category=:subcategory1")
     Page<Product> findAllProductsInSubCategory(
             @Param(value = "subcategory1") String subcategory1, Pageable pageable);
 
 
-    @Query("SELECT p FROM Product p WHERE p.category.subcategory=:subcategory2")
+    @Query("SELECT p FROM Product p WHERE p.productCategory.subcategory=:subcategory2")
     Page<Product> findAllProductsInSubSubCategory(
             @Param(value = "subcategory2") String subcategory2, Pageable pageable);
 

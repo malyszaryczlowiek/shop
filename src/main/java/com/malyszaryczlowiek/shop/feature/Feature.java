@@ -5,15 +5,17 @@ import com.malyszaryczlowiek.shop.categories.Category;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 
 @Entity
 //@Inheritance(strategy = InheritanceType.JOINED) // to było używane przy dziediczeniu po encjach.
-@Table(name = "feature")
+@Table(name = "feature_table")
 public class Feature {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "feature_id", unique = true)
     private Long id;
 
     /**
@@ -21,7 +23,8 @@ public class Feature {
      * w strylu: szukaj po procesorze dla komputerów i będzie wyszukiwało
      * po procesorze dla telefonów/urządzeń mobilnych.
      */
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @NotNull
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
     private Category category;
 
     /**
@@ -46,6 +49,14 @@ public class Feature {
 
 
     /**
+     * określa czy jest to podstawowa dana taka jak:
+     * cena nazwa produktu brand, dostępność ilość w bazie danych.
+     */
+    @Column(name = "basic_information", nullable = false)
+    private boolean basicInformation;
+
+
+    /**
      * lista produktów która posiada daną cechę.
      * Na tę chwilę można z tego zrezygnować i posiłkować się repozytorium
      * w którym w SQL'a będziemy wstrzykiwali cechę którą będzie musiał znaleźć
@@ -57,11 +68,12 @@ public class Feature {
 
     public Feature() {}
 
-    public Feature(//Category category,
+    public Feature(Category category, boolean basicInformation,
                    @NotEmpty @NotBlank String featureSearchingDescriptor,
                    @NotEmpty @NotBlank String featureName,
                    @NotEmpty @NotBlank String featureValue) {
-        //this.category = category;
+        this.category = category;
+        this.basicInformation = basicInformation;
         this.featureSearchingDescriptor = featureSearchingDescriptor;
         this.featureName = featureName;
         this.featureValue = featureValue;
@@ -84,6 +96,13 @@ public class Feature {
         this.category = category;
     }
 
+    public boolean isBasicInformation() {
+        return basicInformation;
+    }
+
+    public void setBasicInformation(boolean basicInformation) {
+        this.basicInformation = basicInformation;
+    }
 
     public String getFeatureSearchingDescriptor() {
         return featureSearchingDescriptor;

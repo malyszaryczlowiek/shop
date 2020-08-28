@@ -16,26 +16,32 @@ import java.util.Map;
  */
 public class ProductModel extends RepresentationModel<ProductModel> {
 
+    /*
     private final String productName;
     private final String brand;
     private final String prize;
     private final String accessed;
+
+     */
     private final String section;
     private final String category;
     private final String subcategory;
-    private final String amountInStock;
+    //private final String amountInStock;
     private final Map<String,String> specification = new LinkedHashMap<>();
 
 
     public ProductModel(Product product) {
+        /*
         this.productName = product.getProductName().getFeatureValue();
-        this.brand = product.getBrand().getFeatureValue();
+        this.brand = product.getProductBrand().getFeatureValue();
         this.prize = product.getPrize().getFeatureValue();
         this.accessed = product.getAccessed().getFeatureValue();
-        this.section = product.getCategory().getSection();
-        this.category = product.getCategory().getCategory();
-        this.subcategory = product.getCategory().getSubcategory();
-        this.amountInStock = product.getAmountInStock().getFeatureValue();
+
+         */
+        this.section = product.getProductCategory().getSection();
+        this.category = product.getProductCategory().getCategory();
+        this.subcategory = product.getProductCategory().getSubcategory();
+        //this.amountInStock = product.getAmountInStock().getFeatureValue();
         setSpecification(product);
     }
 
@@ -43,12 +49,16 @@ public class ProductModel extends RepresentationModel<ProductModel> {
         List<Feature> featureList = product.getSpecification();
         for(Feature feature: featureList)
             specification.put(feature.getFeatureName(), feature.getFeatureValue());
+        /*
         List<Product> subProducts = product.getComponents();
         for (Product product1: subProducts)
             specification.put(product1.getProductName().getFeatureName(),
                     product1.getProductName().getFeatureValue());
+         */
+
     }
 
+    /*
     public String getProductName() {
         return productName;
     }
@@ -65,13 +75,23 @@ public class ProductModel extends RepresentationModel<ProductModel> {
         return accessed;
     }
 
-    public String getCategory() {
-        return category;
+    public String getAccessed() {
+        return accessed;
     }
 
     public String getAmountInStock() {
         return amountInStock;
     }
+
+     */
+
+
+
+    public String getCategory() {
+        return category;
+    }
+
+
 
     public String getSection() {
         return section;
@@ -81,9 +101,6 @@ public class ProductModel extends RepresentationModel<ProductModel> {
         return subcategory;
     }
 
-    public String getAccessed() {
-        return accessed;
-    }
 
     public Map<String, String> getSpecification() {
         return specification;

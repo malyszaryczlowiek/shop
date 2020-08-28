@@ -1,5 +1,6 @@
 package com.malyszaryczlowiek.shop.admin;
 
+import com.malyszaryczlowiek.shop.products.SearchingCriteria;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -171,7 +172,7 @@ public class TestingController {
      * @param request
      * @return
      */
-    @RequestMapping(path = "invalidationOfSession", method = RequestMethod.GET)
+    @RequestMapping(path = "/invalidationOfSession", method = RequestMethod.GET)
     ResponseEntity<String> invalidationOfSession(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
         if (session == null)
@@ -191,6 +192,17 @@ public class TestingController {
         //logger.warn("sprawdzam czy po invalidacji można zmienić id. session id changing to value: " + request.changeSessionId());
 
         return ResponseEntity.status(HttpStatus.OK).body("method returned normally");
+    }
+
+
+    /**
+     * testowanie obiektu zawirającego mapę.
+     * @return
+     */
+    @RequestMapping(path = "/map", method = RequestMethod.GET)
+    ResponseEntity<SearchingCriteria> getSearchingCriteria() {
+
+        return ResponseEntity.status(HttpStatus.OK).body(new SearchingCriteria());
     }
 
 }

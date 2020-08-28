@@ -13,7 +13,7 @@ import java.util.List;
 public interface CategoryRepository extends JpaRepository<Category, Long> {
 
 
-    @Query("SELECT c FROM Category c WHERE c.section=:categoryName")
+    @Query("SELECT c FROM Category c WHERE c.section=:section")
     List<Category> findAllCategoriesInGivenSection(
             @Param(value = "section") String section);
 

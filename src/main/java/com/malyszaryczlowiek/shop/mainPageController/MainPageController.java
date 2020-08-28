@@ -20,10 +20,14 @@ public class MainPageController {
 
     private final Logger logger = LoggerFactory.getLogger(MainPageController.class);
     private final ClientRepository clientRepository;
+    //private final MainPageLinkSupplier mainPageLinkSupplier;
 
 
-    public MainPageController(ClientRepository clientRepository) {
+    public MainPageController(ClientRepository clientRepository
+//            ,                              MainPageLinkSupplier mainPageLinkSupplier
+    ) {
         this.clientRepository = clientRepository;
+      //  this.mainPageLinkSupplier = mainPageLinkSupplier;
     }
 
 
@@ -33,8 +37,10 @@ public class MainPageController {
      */
     @RequestMapping(method = RequestMethod.GET)
     public ResponseEntity<MainPageModel> welcomePage() {
-        MainPageModel mainPageModel = new MainPageModel();
-        return ResponseEntity.status(HttpStatus.OK).body(mainPageModel);
+        MainPageLinkSupplier mainPageLinkSupplier = new MainPageLinkSupplier();
+        MainPageModelAssembler assembler = new MainPageModelAssembler(mainPageLinkSupplier);
+        MainPage main = new MainPage();
+        return ResponseEntity.status(HttpStatus.OK).body(assembler.toModel(main));
     }
 
 

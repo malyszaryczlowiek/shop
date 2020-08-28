@@ -6,11 +6,11 @@ import org.springframework.hateoas.server.RepresentationModelAssembler;
 public class ShoppingCartModelAssembler implements RepresentationModelAssembler<ShoppingCart, ShoppingCartModel> {
 
 
-    not implemented
+    //TODO not implemented
     @Override
     public ShoppingCartModel toModel(ShoppingCart entity) {
         ShoppingCartModel model = new ShoppingCartModel(entity);
-        model.add(dodać linki);
+        //model.add(dodać linki);
         return model;
     }
 
