@@ -80,7 +80,9 @@ public class Product { //extends Feature
     @ManyToMany
     private List<Product> components = new ArrayList<>();
 
-    @OneToMany
+
+    @ManyToMany(fetch = FetchType.EAGER,
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
     private final List<Feature> specification = new ArrayList<>();
 
 
@@ -89,8 +91,8 @@ public class Product { //extends Feature
 
     public Product(@NotNull Category productCategory, @NotNull Feature productBrand,
                    @NotNull Feature productName, @NotNull Feature prize,
-                   @NotNull Feature accessed, @NotNull Feature amountInStock
-                   , List<Product> components
+                   @NotNull Feature accessed, @NotNull Feature amountInStock,
+                   List<Product> components
     ) {
         this.productCategory = productCategory;
         /*

@@ -17,13 +17,19 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
  */
 public class ProductModelAssembler implements RepresentationModelAssembler<Product,ProductModel> {
 
+    private boolean additionalSpecification = false;
+
     @Override
     public ProductModel toModel(Product entity) {
-        ProductModel model = new ProductModel(entity);
+        ProductModel model = new ProductModel(entity, additionalSpecification);
         model.add(linkGenerator(entity));
         return model;
     }
 
+
+    public void setAdditionalSpecification(boolean additionalSpecification) {
+        this.additionalSpecification = additionalSpecification;
+    }
 
     /**
      * TODO napisać test sprawdzający poprawność działania metody.

@@ -1,11 +1,14 @@
 package com.malyszaryczlowiek.shop.feature;
 
 import com.malyszaryczlowiek.shop.categories.Category;
+import com.malyszaryczlowiek.shop.products.Product;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Entity
@@ -29,23 +32,30 @@ public class Feature {
 
     /**
      * Descryptor, który jest używany w wyszukiwaniu w URLu.
+     * eg. cpu, prize, p_name
      */
     @NotEmpty
     @NotBlank
     @Column(name = "searching_descriptor", nullable = false)
-    private String featureSearchingDescriptor; // eg. cpu, prize
+    private String featureSearchingDescriptor; //
 
 
+    /**
+     * Wyświetlana nazwa cechy
+     * eg. Processor, Prize, Product Name
+     */
     @NotEmpty
     @NotBlank
-    @Column(name = "feature_name", nullable = false) // eg. Procesor, Prize
+    @Column(name = "feature_name", nullable = false) //
     private String featureName;
 
-
+    /**
+     *  eg. i9-9600K, 4999.00
+     */
     @NotEmpty
     @NotBlank
     @Column(name = "feature_value", nullable = false)
-    private String featureValue; // eg. i9-9600K, 4999.00
+    private String featureValue;
 
 
     /**
@@ -60,10 +70,10 @@ public class Feature {
      * lista produktów która posiada daną cechę.
      * Na tę chwilę można z tego zrezygnować i posiłkować się repozytorium
      * w którym w SQL'a będziemy wstrzykiwali cechę którą będzie musiał znaleźć
-     *
      */
-    //@OneToMany
-    //private List<Product> products;
+    @ManyToMany(mappedBy = "specification",
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
+    private final List<Product> products = new ArrayList<>();
 
 
     public Feature() {}
@@ -126,5 +136,13 @@ public class Feature {
 
     public void setFeatureValue(String featureValue) {
         this.featureValue = featureValue;
+    }
+
+    public List<Product> getProducts() {
+        return products;
+    }
+
+    public void setProducts(List<Product> products) {
+        this.products.addAll(products);
     }
 }

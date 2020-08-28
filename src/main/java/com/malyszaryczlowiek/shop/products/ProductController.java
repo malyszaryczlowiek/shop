@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 
 @RestController
@@ -93,7 +94,7 @@ public class ProductController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
         Pageable pageable = controllerUtil.setPaging(0, 20, "d", "productName");
-        return getProducts(categories, pageable);
+        return getProducts(categories, pageable, null);
     }
 
 
@@ -110,10 +111,9 @@ public class ProductController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
         Pageable pageable = controllerUtil.setPaging(0, 20, "d", "productName");
-        return getProducts(categories, pageable);
+        logger.debug("buduję Page<ProductModel>");
+        return getProducts(categories, pageable, searchingCriteria);
     }
-
-
 
 
 
@@ -122,19 +122,37 @@ public class ProductController {
      * ale za to zapytania do bazy są koszmarne i wyszukanie trwa
      * dłużej.
      */
-    private ResponseEntity<Page<ProductModel>> getProducts(List<Category> listOfCategories, Pageable pageable) {
+    private ResponseEntity<Page<ProductModel>> getProducts(
+            List<Category> listOfCategories, Pageable pageable, SearchingCriteria searchingCriteria) {
+
         if ( !listOfCategories.isEmpty() ) {
             Page<Product> listOfProducts = productRepository.findAllProductsInTheseCategories(
                     listOfCategories, pageable);
             if (listOfProducts.getTotalElements() == 0)
                 return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
             ProductModelAssembler assembler = new ProductModelAssembler();
+            if (searchingCriteria != null) {
+
+
+                // zaimplementować searching produktów w zależności od zadanych w
+                // SearchingCriteria parametrach.
+                Stream<Product> productStream = listOfProducts.stream();
+
+
+
+
+
+
+
+
+            }
             return ResponseEntity.status(HttpStatus.OK)
                     .body(listOfProducts.map(assembler::toModel));
         }
         else
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build(); // bo to oznacza, że nie ma takiej kateogrii
     }
+
 
 
     /**
@@ -157,9 +175,10 @@ public class ProductController {
     }
 
 
+
     /**
-     * TODO potem zmienić na ? extends RepresentationModel<?>
      * Metoda zwraca produkt
+     *
      * @param id identyfikator produktu
      * @return Obiekt Produktu
      */
@@ -172,6 +191,7 @@ public class ProductController {
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
+
 
 
     /**
@@ -194,6 +214,7 @@ public class ProductController {
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
+
 
 
     /**
@@ -223,6 +244,14 @@ public class ProductController {
                     "There is no such product.");
     }
 }
+
+
+
+
+
+
+
+
 
 
 

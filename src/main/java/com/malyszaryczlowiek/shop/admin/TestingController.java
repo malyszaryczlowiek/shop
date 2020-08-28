@@ -1,5 +1,6 @@
 package com.malyszaryczlowiek.shop.admin;
 
+import com.malyszaryczlowiek.shop.client.Client;
 import com.malyszaryczlowiek.shop.products.SearchingCriteria;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,9 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.security.Principal;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Locale;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -200,9 +199,17 @@ public class TestingController {
      * @return
      */
     @RequestMapping(path = "/map", method = RequestMethod.GET)
-    ResponseEntity<SearchingCriteria> getSearchingCriteria() {
+    ResponseEntity<Map<String, String>> getSearchingCriteria() {
+        Map<String, String> testingMap = new LinkedHashMap<>();
+        testingMap.put("key1", "value1");
+        testingMap.put("key2", "value2");
+        return ResponseEntity.status(HttpStatus.OK).body(testingMap);
+    }
 
-        return ResponseEntity.status(HttpStatus.OK).body(new SearchingCriteria());
+    @RequestMapping(path = "/userInfo", method = RequestMethod.GET)
+    ResponseEntity<Client> getClient() {
+        Client client = new Client("fake@email.com", Integer.valueOf("123456789"), "jakiś pass" ) ;
+        return ResponseEntity.status(HttpStatus.OK).body(client);
     }
 
 }

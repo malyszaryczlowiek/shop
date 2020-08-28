@@ -2,11 +2,14 @@ package com.malyszaryczlowiek.shop.products;
 
 import com.malyszaryczlowiek.shop.feature.Feature;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.hateoas.RepresentationModel;
 
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  *
@@ -16,32 +19,47 @@ import java.util.Map;
  */
 public class ProductModel extends RepresentationModel<ProductModel> {
 
-    /*
-    private final String productName;
-    private final String brand;
-    private final String prize;
-    private final String accessed;
+    private final Logger logger = LoggerFactory.getLogger(ProductModel.class);
 
-     */
     private final String section;
     private final String category;
     private final String subcategory;
-    //private final String amountInStock;
+    private final boolean additionalSpecification;
     private final Map<String,String> specification = new LinkedHashMap<>();
 
+    private String brand;
+    private String productName; // model
+    private String prize;
+    private String accessed;
+    private String amountInStock;
 
-    public ProductModel(Product product) {
-        /*
-        this.productName = product.getProductName().getFeatureValue();
-        this.brand = product.getProductBrand().getFeatureValue();
-        this.prize = product.getPrize().getFeatureValue();
-        this.accessed = product.getAccessed().getFeatureValue();
 
-         */
+    public ProductModel(Product product, boolean additionalSpecification) {
+        logger.debug("inserting Data from Product to ProductModel");
+        this.additionalSpecification = additionalSpecification;
         this.section = product.getProductCategory().getSection();
         this.category = product.getProductCategory().getCategory();
         this.subcategory = product.getProductCategory().getSubcategory();
-        //this.amountInStock = product.getAmountInStock().getFeatureValue();
+        product.getSpecification().stream()
+                .filter(feature -> feature.getFeatureSearchingDescriptor().equals("b")) // b - brand
+                .findAny()
+                .ifPresent(feature ->  this.brand = feature.getFeatureValue());
+        product.getSpecification().stream()
+                .filter(feature -> feature.getFeatureSearchingDescriptor().equals("pn"))
+                .findAny()
+                .ifPresent(feature ->  this.productName = feature.getFeatureValue());
+        product.getSpecification().stream()
+                .filter(feature -> feature.getFeatureSearchingDescriptor().equals("p"))
+                .findAny()
+                .ifPresent(feature ->  this.prize = feature.getFeatureValue());
+        product.getSpecification().stream()
+                .filter(feature -> feature.getFeatureSearchingDescriptor().equals("a")) // a - accessed
+                .findAny()
+                .ifPresent(feature ->  this.accessed = feature.getFeatureValue());
+        product.getSpecification().stream()
+                .filter(feature -> feature.getFeatureSearchingDescriptor().equals("sta")) // sta - stock amount
+                .findAny()
+                .ifPresent(feature ->  this.amountInStock = feature.getFeatureValue());
         setSpecification(product);
     }
 
@@ -49,16 +67,23 @@ public class ProductModel extends RepresentationModel<ProductModel> {
         List<Feature> featureList = product.getSpecification();
         for(Feature feature: featureList)
             specification.put(feature.getFeatureName(), feature.getFeatureValue());
-        /*
-        List<Product> subProducts = product.getComponents();
-        for (Product product1: subProducts)
-            specification.put(product1.getProductName().getFeatureName(),
-                    product1.getProductName().getFeatureValue());
-         */
-
+        // TODO sprawdzić czy trzeba to
+        if (additionalSpecification) {
+            logger.debug("inserting subproduct information to product model");
+            List<Product> subProducts = product.getComponents();
+            for (Product subProduct: subProducts) {
+                Optional<Feature> subProductName = subProduct.getSpecification()
+                        .stream()
+                        .filter(spec -> spec.getFeatureName().equals("Product Name"))
+                        .findFirst();
+                subProductName.ifPresent(feature ->
+                        specification.put(feature.getFeatureName(), feature.getFeatureValue()));
+            }
+        }
     }
 
-    /*
+
+
     public String getProductName() {
         return productName;
     }
@@ -83,15 +108,9 @@ public class ProductModel extends RepresentationModel<ProductModel> {
         return amountInStock;
     }
 
-     */
-
-
-
     public String getCategory() {
         return category;
     }
-
-
 
     public String getSection() {
         return section;
@@ -100,7 +119,6 @@ public class ProductModel extends RepresentationModel<ProductModel> {
     public String getSubcategory() {
         return subcategory;
     }
-
 
     public Map<String, String> getSpecification() {
         return specification;
