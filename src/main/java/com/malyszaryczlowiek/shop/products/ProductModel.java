@@ -28,7 +28,7 @@ public class ProductModel extends RepresentationModel<ProductModel> {
     private final Map<String,String> specification = new LinkedHashMap<>();
 
     private String brand;
-    private String productName; // model
+    private String productName;
     private String prize;
     private String accessed;
     private String amountInStock;

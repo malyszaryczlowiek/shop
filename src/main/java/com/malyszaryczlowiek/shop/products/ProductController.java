@@ -95,8 +95,8 @@ public class ProductController {
             // parametry wyświetlania strony
             @RequestParam(name = "page", defaultValue = "0", required = false) @PositiveOrZero int page,
             @RequestParam(name = "size", defaultValue = "20", required = false) @PositiveOrZero int size,
-            @RequestParam(name = "sort", defaultValue = "a", required = false) String sorting,
-            @RequestParam(name = "sortBy", defaultValue = "productName", required = false) String sortBy) {
+            @RequestParam(name = "sort", defaultValue = "d", required = false) String sorting,
+            @RequestParam(name = "sortBy", defaultValue = "popularity", required = false) String sortBy) {
         //Pageable pageable = controllerUtil.setPaging(0, 20, "a", "productName");
         Pageable pageable = controllerUtil.setPaging(page, size, sorting, sortBy);
         return getProducts(section, category, subcategory, null, pageable);
@@ -113,8 +113,8 @@ public class ProductController {
             // parametry wyświetlania strony
             @RequestParam(name = "page", defaultValue = "0", required = false) @PositiveOrZero int page,
             @RequestParam(name = "size", defaultValue = "20", required = false) @PositiveOrZero int size,
-            @RequestParam(name = "sort", defaultValue = "a", required = false) String sorting,
-            @RequestParam(name = "sortBy", defaultValue = "productName", required = false) String sortBy) {
+            @RequestParam(name = "sort", defaultValue = "d", required = false) String sorting,
+            @RequestParam(name = "sortBy", defaultValue = "popularity", required = false) String sortBy) {
         Pageable pageable = controllerUtil.setPaging(page, size, sorting, sortBy);
         return getProducts(section, category, subcategory, searchingCriteria, pageable);
     }
@@ -166,6 +166,7 @@ public class ProductController {
             logger.debug("po przefiltrowaniu produktów nie znaleziono żadnego pasującego wyniku.");
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         }
+        logger.debug("ilość produktów po odfiltrowaniu niepasujących wynosi: " + listOfProducts.size());
         Page<Product> pageOfProducts = new PageImpl<>(listOfProducts, pageable,listOfProducts.size());
         return ResponseEntity.status(HttpStatus.OK)
                 .body(pageOfProducts.map(assembler::toModel));

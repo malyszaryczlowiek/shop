@@ -5,6 +5,7 @@ import com.malyszaryczlowiek.shop.feature.Feature;
 
 import javax.persistence.*;
 import javax.validation.constraints.*;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,6 +39,8 @@ public class Product { //extends Feature
     @Column(name = "product_id", unique = true)
     private Long id;
 
+
+
     /**
      * cascade: dodaję tylko Persist tak aby przy dodawaniu nowego
      * produktu, który nie pasuje jeszcze do żadnej kategorii,
@@ -47,11 +50,104 @@ public class Product { //extends Feature
      */
     @NotNull
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
-    //@Column(name = "category", nullable = false)
     private Category productCategory;
 
-    /*
 
+    // tutaj trzeba jeszcze wszędzie gdzie to potrzebne pouzupełniać popularność
+    /*
+    trzeba zrobić tak by popularnośc była obliczana na podstawie productOrder po id produktu
+    trzeba dodać jeszcze do produkt ordr datę zamówienia. tak aby można było porównywac czas.
+     */
+    /**
+     * popularność nie jest w żaden sposób wyświetlania, służy tylko i wyłącznie
+     * w celach sortowania w ramach danej kategorii, lub sortowania w wynikach
+     * wyszukiwania.
+     */
+    @Column(name = "popularity")
+    private BigDecimal popularity;
+
+
+
+    /**
+     * Z tego co pamiętam to trzeba zawsze zainicjlalizować listę
+     */
+    @ManyToMany
+    private List<Product> components = new ArrayList<>();
+
+
+
+    @ManyToMany(fetch = FetchType.EAGER,
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
+    private final List<Feature> specification = new ArrayList<>();
+
+
+
+    public Product() {}
+
+    public Product(@NotNull Category productCategory, @NotNull Feature productBrand,
+                   @NotNull Feature productName, @NotNull Feature prize,
+                   @NotNull Feature accessed, @NotNull Feature amountInStock,
+                   List<Product> components
+    ) {
+        this.productCategory = productCategory;
+        this.specification.add(productBrand);
+        this.specification.add(productName);
+        this.specification.add(prize);
+        this.specification.add(accessed);
+        this.specification.add(amountInStock);
+        this.components = components;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Category getProductCategory() {
+        return productCategory;
+    }
+
+    public void setProductCategory(Category category) {
+        this.productCategory = category;
+    }
+
+    public BigDecimal getPopularity() {
+        return popularity;
+    }
+
+    public void setPopularity(BigDecimal popularity) {
+        this.popularity = popularity;
+    }
+
+    public List<Product> getComponents() {
+        return components;
+    }
+
+    public void setComponents(List<Product> components) {
+        this.components = components;
+    }
+
+    public List<Feature> getSpecification() {
+        return specification;
+    }
+
+    public void setSpecification(List<Feature> specification) {
+        this.specification.clear();
+        this.specification.addAll(specification);// = specification;
+    }
+}
+
+
+
+
+// TODO można jeszcze zdefiniowac popularność jako liczbę sprzedanych sztuk w ciągu ostatniego miesiąca
+// można też dodać parametr oznaczający promocję / nowość / ostatnie sztuki gdy jest mniej niż 5
+
+
+    /*
     @NotNull
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
     private Feature productBrand;
@@ -74,53 +170,41 @@ public class Product { //extends Feature
      */
 
 
-    /**
-     * Z tego co pamiętam to trzeba zawsze zainicjlalizować listę
-     */
-    @ManyToMany
-    private List<Product> components = new ArrayList<>();
+
+/*
+
+// old implementanion
+
+    @NotNull
+    @ManyToOne
+    @Column(name = "brand")
+    private Brand brand;
 
 
-    @ManyToMany(fetch = FetchType.EAGER,
-            cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
-    private final List<Feature> specification = new ArrayList<>();
+    @NotEmpty
+    @NotBlank
+    @NotNull
+    @Column(name = "product_name", unique = true, nullable = false)
+    private String productName;
 
 
+    @Digits(integer=5, fraction=2, message = "Incorrect prize value.")
+    @Column(name = "product_prize", nullable = false)
+    private BigDecimal prize;
 
-    public Product() {}
 
-    public Product(@NotNull Category productCategory, @NotNull Feature productBrand,
-                   @NotNull Feature productName, @NotNull Feature prize,
-                   @NotNull Feature accessed, @NotNull Feature amountInStock,
-                   List<Product> components
-    ) {
-        this.productCategory = productCategory;
-        /*
-        this.productBrand = productBrand;
-        this.productName = productName;
-        this.prize = prize;
-        this.accessed = accessed;
-        this.amountInStock = amountInStock;
-         */
+    @Column(name = "accessed", nullable = false)
+    private boolean accessed = true;
 
-        this.components = components;
-    }
 
-    public Long getId() {
-        return id;
-    }
+    @PositiveOrZero
+    @Digits(integer = 5, fraction = 0)
+    @Column(name = "stock_amount", nullable = false)
+    private Integer amountInStock = 1;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+*/
 
-    public Category getProductCategory() {
-        return productCategory;
-    }
 
-    public void setProductCategory(Category category) {
-        this.productCategory = category;
-    }
 
     /*
     public Feature getProductBrand() {
@@ -165,64 +249,6 @@ public class Product { //extends Feature
      */
 
 
-
-    public List<Product> getComponents() {
-        return components;
-    }
-
-    public void setComponents(List<Product> components) {
-        this.components = components;
-    }
-
-    public List<Feature> getSpecification() {
-        return specification;
-    }
-
-    public void setSpecification(List<Feature> specification) {
-        this.specification.addAll(specification);// = specification;
-    }
-}
-
-
-
-
-// TODO można jeszcze zdefiniowac popularność jako liczbę sprzedanych sztuk w ciągu ostatniego miesiąca
-// można też dodać parametr oznaczający promocję / nowość / ostatnie sztuki gdy jest mniej niż 5
-
-
-
-/*
-
-// old implementanion
-
-    @NotNull
-    @ManyToOne
-    @Column(name = "brand")
-    private Brand brand;
-
-
-    @NotEmpty
-    @NotBlank
-    @NotNull
-    @Column(name = "product_name", unique = true, nullable = false)
-    private String productName;
-
-
-    @Digits(integer=5, fraction=2, message = "Incorrect prize value.")
-    @Column(name = "product_prize", nullable = false)
-    private BigDecimal prize;
-
-
-    @Column(name = "accessed", nullable = false)
-    private boolean accessed = true;
-
-
-    @PositiveOrZero
-    @Digits(integer = 5, fraction = 0)
-    @Column(name = "stock_amount", nullable = false)
-    private Integer amountInStock = 1;
-
-*/
 
 
 
