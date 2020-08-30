@@ -5,7 +5,14 @@ import java.util.Map;
 
 public class SearchingCriteria {
 
-    // kategoria nie jest potrzebna bo jest pobierana ze ścieżki
+    /**
+     * kategoria nie jest potrzebna bo jest pobierana ze ścieżki.
+     * Kluczem jest tutaj descryptor z
+     * {@link com.malyszaryczlowiek.shop.feature.Feature#featureSearchingDescriptor
+     * Feature#featureSearchingDescriptor}
+     * Wartością jest natomiast lista parametrów-wartości po jakich należy szukać
+     *
+     */
     private Map<String, List<String>> searchingParameters;
 
     public SearchingCriteria() {}

@@ -21,7 +21,10 @@ public class CategoryModel extends RepresentationModel<CategoryModel> {
                 // linki do kategorii
                 Link link = linkTo(methodOn(ProductController.class)
                         .getAllProductsInSubcategory(cat.getSectionDescriptor(),
-                                cat.getCategoryDescriptor(), cat.getSubcategoryDescriptor()))
+                                cat.getCategoryDescriptor(), cat.getSubcategoryDescriptor()
+                                // parametry wyświetlania strony
+                                ,0, 20, "a", "productName"
+                        ))
                         .withRel(cat.getCategoryDescriptor())
                         .withName(cat.getCategory());
                 links.add(link);

@@ -15,9 +15,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.constraints.PositiveOrZero;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Stream;
 
 
 @RestController
@@ -52,12 +52,7 @@ public class ProductController {
     public ResponseEntity<CategoryModel> getAllCategoriesInSection(
             @PathVariable(name = "section") String section) {
         List<Category> categories = categoryRepository.findAllCategoriesInGivenSection(section);
-        if (categories.isEmpty()) {
-            logger.debug("jest empty - nie ma takiej sekcji");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-        CategoryModelAssembler assembler = new CategoryModelAssembler();
-        return ResponseEntity.status(HttpStatus.OK).body(assembler.toModel(categories));
+        return getListOfCategories(categories, false);
     }
 
 
@@ -69,14 +64,20 @@ public class ProductController {
             @PathVariable(name = "section") String section,
             @PathVariable(name = "category") String category) {
         List<Category> categories = categoryRepository.findAllSubcategoriesInGivenSectionAndCategory(section, category);
+        return getListOfCategories(categories, true);
+    }
+
+
+    private ResponseEntity<CategoryModel> getListOfCategories(List<Category> categories, boolean showSubcategories) {
         if (categories.isEmpty()) {
             logger.debug("jest empty - nie ma takiej sekcji");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
         CategoryModelAssembler assembler = new CategoryModelAssembler();
-        assembler.setSubcategoriesLinksFlag(true);
+        assembler.setSubcategoriesLinksFlag(showSubcategories);
         return ResponseEntity.status(HttpStatus.OK).body(assembler.toModel(categories));
     }
+
 
 
     /**
@@ -87,14 +88,15 @@ public class ProductController {
     public ResponseEntity<Page<ProductModel>> getAllProductsInSubcategory(
             @PathVariable(name = "section") String section,
             @PathVariable(name = "category") String category,
-            @PathVariable(name = "subcategory") String subcategory) {
-        List<Category> categories = categoryRepository.findSubcategory(section, category, subcategory);
-        if (categories.isEmpty()) {
-            logger.debug("jest empty - nie ma takiej sekcji");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-        Pageable pageable = controllerUtil.setPaging(0, 20, "d", "productName");
-        return getProducts(categories, pageable, null);
+            @PathVariable(name = "subcategory") String subcategory,
+            // parametry wyświetlania strony
+            @RequestParam(name = "page", defaultValue = "0", required = false) @PositiveOrZero int page,
+            @RequestParam(name = "size", defaultValue = "20", required = false) @PositiveOrZero int size,
+            @RequestParam(name = "sort", defaultValue = "a", required = false) String sorting,
+            @RequestParam(name = "sortBy", defaultValue = "productName", required = false) String sortBy) {
+        //Pageable pageable = controllerUtil.setPaging(0, 20, "a", "productName");
+        Pageable pageable = controllerUtil.setPaging(page, size, sorting, sortBy);
+        return getProducts(section, category, subcategory, null, pageable);
     }
 
 
@@ -104,16 +106,86 @@ public class ProductController {
             @RequestBody SearchingCriteria searchingCriteria,
             @PathVariable(name = "section") String section,
             @PathVariable(name = "category") String category,
-            @PathVariable(name = "subcategory") String subcategory) {
+            @PathVariable(name = "subcategory") String subcategory,
+            // parametry wyświetlania strony
+            @RequestParam(name = "page", defaultValue = "0", required = false) @PositiveOrZero int page,
+            @RequestParam(name = "size", defaultValue = "20", required = false) @PositiveOrZero int size,
+            @RequestParam(name = "sort", defaultValue = "a", required = false) String sorting,
+            @RequestParam(name = "sortBy", defaultValue = "productName", required = false) String sortBy) {
+        Pageable pageable = controllerUtil.setPaging(page, size, sorting, sortBy);
+        return getProducts(section, category, subcategory, searchingCriteria, pageable);
+    }
+
+
+
+    /**
+     *
+     *
+     * ta metoda bardziej obciąża pamięć bo wczytuje dużo danych, które następnie odfiltrowuje,
+     * jest natomiast szybsza pod kątem wczytania danych z DB?
+     */
+    private ResponseEntity<Page<ProductModel>> getProducts(String section, String category,
+            String subcategory, SearchingCriteria searchingCriteria, Pageable pageable) {
         List<Category> categories = categoryRepository.findSubcategory(section, category, subcategory);
         if (categories.isEmpty()) {
             logger.debug("jest empty - nie ma takiej sekcji");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        Pageable pageable = controllerUtil.setPaging(0, 20, "d", "productName");
-        logger.debug("buduję Page<ProductModel>");
-        return getProducts(categories, pageable, searchingCriteria);
+        List<Product> listOfProducts =
+                productRepository.findAllProductsInTheseCategories(categories);
+        if (listOfProducts.size() == 0)
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        ProductModelAssembler assembler = new ProductModelAssembler();
+        // jeśli istnieją jakieś niezerowe zadane kryteria wyszukiwania to
+        // należy wg. nich odfiltrować wyniki
+        if (searchingCriteria != null) {
+            // wersja z iteratorem
+            Iterator<Product> productIterator = listOfProducts.iterator();
+            searchingCriteria.getSearchingParameters().forEach( (descriptorToFind, listOfValues) -> {
+                if (productIterator.hasNext()) {
+                    boolean doesProductFulfilSearchingCriteria = productIterator.next().getSpecification().stream().anyMatch(
+                            // pierwszy warunek sprawdza czy feature ma ten descryptor
+                            feature -> feature.getFeatureSearchingDescriptor().equals(descriptorToFind)
+                                    // jeśli go ma to sprawdza czy wartość tego descryptora
+                                    // jest w szukanych wartościach.
+                                    && listOfValues.contains(feature.getFeatureValue())
+                            // jeśli to zwróci true to znaczy, że produkt zawiera feature ze wskazaną wartością
+                            // i nie należy go usówać
+                    );
+                    if ( !doesProductFulfilSearchingCriteria )
+                        productIterator.remove();
+                }
+            });
+        }
+        Page<Product> pageOfProducts = new PageImpl<>(listOfProducts, pageable,listOfProducts.size());
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(pageOfProducts.map(assembler::toModel));
     }
+
+    /*
+
+            // TOD spróbowac zamiast streamu iteratora po produktach
+            final Stream<Product> productStream = listOfProducts.stream();
+            // budujemy stream z filtrów
+            searchingCriteria.getSearchingParameters().forEach( (descriptorToFind, listOfValues) -> {
+                // dla każdego kryterium w searching criteria tworzę filter
+                productStream = productStream.filter(
+                        // sprawdzam czy produkt w descryptorach ficzerów zawiera szukanego descryptora
+                        product -> product.getSpecification().stream().anyMatch(
+                                // pierwszy warunek sprawdza czy feature ma ten descryptor
+                                feature -> feature.getFeatureSearchingDescriptor().equals(descriptorToFind)
+                                        // jeśli go ma to sprawdza czy wartość tego descryptora
+                                        // jest w szukanych wartościach.
+                                        && listOfValues.contains(feature.getFeatureValue())
+                                // jeśli to zwróci true to znaczy, że produkt zawiera feature ze wskazaną wartością
+                        )
+                );
+            });
+            List<Product> listOfFoundProducts = productStream.collect(Collectors.toList());
+            Page<Product> pageOfFoundProduct = new PageImpl<>(listOfFoundProducts, pageable,listOfFoundProducts.size());
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(pageOfFoundProduct.map(assembler::toModel));
+     */
 
 
 
@@ -121,43 +193,6 @@ public class ProductController {
      * ta metoda wczytuje mniej danych z DB przez co mniej obciąża pamięć,
      * ale za to zapytania do bazy są koszmarne i wyszukanie trwa
      * dłużej.
-     */
-    private ResponseEntity<Page<ProductModel>> getProducts(
-            List<Category> listOfCategories, Pageable pageable, SearchingCriteria searchingCriteria) {
-
-        if ( !listOfCategories.isEmpty() ) {
-            Page<Product> listOfProducts = productRepository.findAllProductsInTheseCategories(
-                    listOfCategories, pageable);
-            if (listOfProducts.getTotalElements() == 0)
-                return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-            ProductModelAssembler assembler = new ProductModelAssembler();
-            if (searchingCriteria != null) {
-
-
-                // zaimplementować searching produktów w zależności od zadanych w
-                // SearchingCriteria parametrach.
-                Stream<Product> productStream = listOfProducts.stream();
-
-
-
-
-
-
-
-
-            }
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(listOfProducts.map(assembler::toModel));
-        }
-        else
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build(); // bo to oznacza, że nie ma takiej kateogrii
-    }
-
-
-
-    /**
-     * ta metoda bardziej obciąża pamięć bo wczytuje dużo danych, które następnie odfiltrowuje,
-     * jest natomiast szybsza pod kątem wczytania danych z DB?
      */
     private ResponseEntity<Page<ProductModel>> getProductsWithFiltering(List<Category> listOfCategories, Pageable pageable) {
         if ( !listOfCategories.isEmpty() ) {
