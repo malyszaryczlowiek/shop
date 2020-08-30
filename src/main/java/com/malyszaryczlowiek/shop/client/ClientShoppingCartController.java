@@ -18,7 +18,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/shoppingCart")
 public class ClientShoppingCartController {
 
-    //private final ShoppingCart shoppingCart;
+    private final ShoppingCart shoppingCart;
+
+    public ClientShoppingCartController(ShoppingCart shoppingCart) {
+        this.shoppingCart = shoppingCart;
+    }
 
     @RequestMapping(method = RequestMethod.GET)
     public ResponseEntity<String> getShoppingCart() {

@@ -20,14 +20,9 @@ public class MainPageController {
 
     private final Logger logger = LoggerFactory.getLogger(MainPageController.class);
     private final ClientRepository clientRepository;
-    //private final MainPageLinkSupplier mainPageLinkSupplier;
 
-
-    public MainPageController(ClientRepository clientRepository
-//            ,                              MainPageLinkSupplier mainPageLinkSupplier
-    ) {
+    public MainPageController(ClientRepository clientRepository) {
         this.clientRepository = clientRepository;
-      //  this.mainPageLinkSupplier = mainPageLinkSupplier;
     }
 
 

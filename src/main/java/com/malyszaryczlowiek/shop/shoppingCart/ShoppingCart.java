@@ -40,7 +40,7 @@ public class ShoppingCart {
         return productsInCart.remove(product) != null;
     }
 
-    public Map<Product, Integer> getAllProducts() {
+    public Map<Product, Integer> getAllProductsInShoppingCart() {
         return this.productsInCart;
     }
 

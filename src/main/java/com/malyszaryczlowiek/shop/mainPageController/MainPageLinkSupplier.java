@@ -45,13 +45,4 @@ public class MainPageLinkSupplier {
     public List<Link> supplyLinks() {
         return listOfLinks;
     }
-
-
-    /**
-     * tego nie ma na razie sensu implementować
-     */
-    @Deprecated
-    public void addLink() {
-
-    }
 }

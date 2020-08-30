@@ -47,7 +47,7 @@ public class UserInitializer implements ApplicationRunner {
         admin.setRoles("ROLE_ADMIN");
 
         Client user = new Client("client1@gmail.com",
-                723796077,
+                123456789,
                 new BCryptPasswordEncoder().encode("useruseruser"));
 
         //Client userAdmin = new Client()
