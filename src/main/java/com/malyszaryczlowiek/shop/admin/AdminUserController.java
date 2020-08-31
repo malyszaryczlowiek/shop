@@ -20,13 +20,13 @@ import org.springframework.web.bind.annotation.*;
  */
 @RestController
 @RequestMapping("/users")
-public class UserController {
+public class AdminUserController {
 
     private final ClientRepository clientRepository;
 
 
     @Autowired
-    UserController(ClientRepository clientRepository) {
+    AdminUserController(ClientRepository clientRepository) {
         this.clientRepository = clientRepository;
     }
 

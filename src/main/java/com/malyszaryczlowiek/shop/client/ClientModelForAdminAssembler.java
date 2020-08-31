@@ -1,6 +1,6 @@
 package com.malyszaryczlowiek.shop.client;
 
-import com.malyszaryczlowiek.shop.admin.UserController;
+import com.malyszaryczlowiek.shop.admin.AdminUserController;
 import com.malyszaryczlowiek.shop.mainPageController.MainPageController;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
@@ -37,12 +37,12 @@ public class ClientModelForAdminAssembler implements RepresentationModelAssemble
     public ClientModelForAdmin toModel(Client entity) {
         ClientModelForAdmin clientModelForAdmin = new ClientModelForAdmin(entity);
         return clientModelForAdmin.add(
-                linkTo(UserController.class).slash(entity.getId()).withSelfRel()
-                ,linkTo(methodOn(UserController.class).getFullUserInfo(entity.getId())).withSelfRel()
-                ,linkTo(methodOn(UserController.class).getFullUserInfo(entity.getId())).withRel("linkToThisFullUserInfo")
-                ,linkTo(UserController.class).slash(entity.getId()).withRel("LinkToSpecificUser")
-                ,linkTo(UserController.class).slash("allUsers").withRel("LinkWithHardCoded_allUsers")
-                ,linkTo(methodOn(UserController.class)
+                linkTo(AdminUserController.class).slash(entity.getId()).withSelfRel()
+                ,linkTo(methodOn(AdminUserController.class).getFullUserInfo(entity.getId())).withSelfRel()
+                ,linkTo(methodOn(AdminUserController.class).getFullUserInfo(entity.getId())).withRel("linkToThisFullUserInfo")
+                ,linkTo(AdminUserController.class).slash(entity.getId()).withRel("LinkToSpecificUser")
+                ,linkTo(AdminUserController.class).slash("allUsers").withRel("LinkWithHardCoded_allUsers")
+                ,linkTo(methodOn(AdminUserController.class)
                         .getAllUsers(20,0,"desc", "name"))
                         .withRel("allUsers")
                 ,linkTo(methodOn(MainPageController.class).welcomePage()).withRel("mainPage")

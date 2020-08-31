@@ -25,10 +25,15 @@ public class Feature {
      * kategoria musi być tutaj obecna tak aby nie dochodziło do kuriozów
      * w strylu: szukaj po procesorze dla komputerów i będzie wyszukiwało
      * po procesorze dla telefonów/urządzeń mobilnych.
+     * EDIT: Wyszukiwanie w ProductController nie wykorzystuje sprawdzania
+     * kategorii wyłuskiwanej z Feature.
      */
+    /*
     @NotNull
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
     private Category category;
+     */
+
 
     /**
      * Descryptor, który jest używany w wyszukiwaniu w URLu.
@@ -78,11 +83,11 @@ public class Feature {
 
     public Feature() {}
 
-    public Feature(Category category, boolean basicInformation,
+    public Feature( boolean basicInformation, //Category category,
                    @NotEmpty @NotBlank String featureSearchingDescriptor,
                    @NotEmpty @NotBlank String featureName,
                    @NotEmpty @NotBlank String featureValue) {
-        this.category = category;
+        //this.category = category;
         this.basicInformation = basicInformation;
         this.featureSearchingDescriptor = featureSearchingDescriptor;
         this.featureName = featureName;
@@ -97,7 +102,7 @@ public class Feature {
         this.id = id;
     }
 
-
+    /*
     public Category getCategory() {
         return category;
     }
@@ -105,6 +110,7 @@ public class Feature {
     public void setCategory(Category category) {
         this.category = category;
     }
+     */
 
     public boolean isBasicInformation() {
         return basicInformation;

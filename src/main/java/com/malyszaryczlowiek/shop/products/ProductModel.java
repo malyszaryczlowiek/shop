@@ -19,7 +19,7 @@ import java.util.Optional;
  */
 public class ProductModel extends RepresentationModel<ProductModel> {
 
-    private final Logger logger = LoggerFactory.getLogger(ProductModel.class);
+    //private final Logger logger = LoggerFactory.getLogger(ProductModel.class);
 
     private final String section;
     private final String category;
@@ -35,7 +35,7 @@ public class ProductModel extends RepresentationModel<ProductModel> {
 
 
     public ProductModel(Product product, boolean additionalSpecification) {
-        logger.debug("inserting Data from Product to ProductModel");
+        // logger.debug("inserting Data from Product to ProductModel");
         this.additionalSpecification = additionalSpecification;
         this.section = product.getProductCategory().getSection();
         this.category = product.getProductCategory().getCategory();
@@ -69,7 +69,7 @@ public class ProductModel extends RepresentationModel<ProductModel> {
             specification.put(feature.getFeatureName(), feature.getFeatureValue());
         // TODO sprawdzić czy trzeba to
         if (additionalSpecification) {
-            logger.debug("inserting subproduct information to product model");
+            // logger.debug("inserting subproduct information to product model");
             List<Product> subProducts = product.getComponents();
             for (Product subProduct: subProducts) {
                 Optional<Feature> subProductName = subProduct.getSpecification()
