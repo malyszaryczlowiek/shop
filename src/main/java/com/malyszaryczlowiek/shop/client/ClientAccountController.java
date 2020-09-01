@@ -87,7 +87,7 @@ public class ClientAccountController {
         }
         else {
             logger.debug("stare hasło z formularza nie pasuje do tego z DB");
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Old email not matching");
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Not matching pattern");
         }
     }
 }

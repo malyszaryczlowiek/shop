@@ -29,7 +29,7 @@ public class MainPageLinkSupplier {
                 .withRel("main_page"));
 
         // link do strony użytkownika
-        listOfLinks.add(linkTo(methodOn(ClientAccountController.class))
+        listOfLinks.add(linkTo(ClientAccountController.class)
                 .withRel("client_side"));
 
         // link do koszyka

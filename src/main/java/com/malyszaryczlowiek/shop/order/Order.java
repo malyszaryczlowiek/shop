@@ -1,6 +1,7 @@
 package com.malyszaryczlowiek.shop.order;
 
 import com.malyszaryczlowiek.shop.client.Client;
+import com.malyszaryczlowiek.shop.feature.Feature;
 import com.malyszaryczlowiek.shop.productOrder.ProductOrder;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -10,6 +11,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 /**
@@ -67,7 +69,10 @@ public class Order {
     public String getTotalPrize() {
         BigDecimal totalPrize = BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP);
         for (ProductOrder productOrder : listOfProducts) {
-            BigDecimal productPrize = new BigDecimal("8.00");//new BigDecimal(productOrder.getProduct().getPrize().getFeatureValue());
+            List<Feature> l = productOrder.getProduct().getSpecification().stream().filter(
+                    feature -> feature.getFeatureSearchingDescriptor().equals("prize")).collect(Collectors.toList());
+            //new BigDecimal(productOrder.getProduct().getPrize().getFeatureValue());
+            BigDecimal productPrize = new BigDecimal(l.get(0).getFeatureValue());
             for (int i  = 0; i < productOrder.getNumberOfOrderedProducts(); ++i )
                 totalPrize.add(productPrize);
         }

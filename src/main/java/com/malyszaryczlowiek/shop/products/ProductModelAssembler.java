@@ -1,15 +1,12 @@
 package com.malyszaryczlowiek.shop.products;
 
 import org.springframework.hateoas.CollectionModel;
-import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 /**
  * Opis i wyjaśnienia patrz {@link com.malyszaryczlowiek.shop.client.ClientModelAssembler
@@ -21,9 +18,7 @@ public class ProductModelAssembler implements RepresentationModelAssembler<Produ
 
     @Override
     public ProductModel toModel(Product entity) {
-        ProductModel model = new ProductModel(entity, additionalSpecification);
-        model.add(linkGenerator(entity));
-        return model;
+        return new ProductModel(entity, additionalSpecification);
     }
 
 
@@ -44,23 +39,6 @@ public class ProductModelAssembler implements RepresentationModelAssembler<Produ
         return CollectionModel.of(list);
     }
 
-
-    private List<Link> linkGenerator(Product entity) {
-        return List.of(
-                // link do strony produktu
-                linkTo(methodOn(ProductController.class)
-                        .getProduct(entity.getId()))
-                        .withSelfRel(),
-                // link do dodania produktu do koszyka
-                linkTo(methodOn(ProductController.class)
-                        .putProductToShoppingCart(1, entity.getId()))
-                        .withRel("shopping_cart").withName("add"),
-                // link to usunięcia produktu jak zostanie dodany do koszyka
-                linkTo(methodOn(ProductController.class)
-                        .deleteProductFromCart(entity.getId()))
-                        .withRel("shopping_cart").withName("remove")
-        );
-    }
 }
 
 

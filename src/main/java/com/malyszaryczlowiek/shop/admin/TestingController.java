@@ -25,7 +25,7 @@ import java.util.*;
 @RequestMapping("/testing")
 public class TestingController {
 
-    Logger logger = LoggerFactory.getLogger(AdminProductController.class);
+    Logger logger = LoggerFactory.getLogger(AdminProductAndCategoryController.class);
 
 
     /**

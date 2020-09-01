@@ -19,7 +19,7 @@ import javax.validation.constraints.NotEmpty;
  */
 @Entity
 @Table(name = "category_table")
-public class Category {
+public class Category implements Comparable<Category> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -73,6 +73,17 @@ public class Category {
     List<Product> listOfProductsInCategory;
     */
 
+    @Override
+    public int compareTo(Category o) {
+        int section = this.getSection().compareTo(o.getSection());
+        if (section != 0) {
+            int cat = this.getCategory().compareTo(o.getCategory());
+            if (cat != 0)
+                return this.getSubcategory().compareTo(o.getSubcategory());
+            return cat;
+        }
+        return section;
+    }
 
     public Category() {}
 

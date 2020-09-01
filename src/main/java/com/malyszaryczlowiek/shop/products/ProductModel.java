@@ -11,6 +11,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 /**
  *
  *
@@ -61,6 +64,7 @@ public class ProductModel extends RepresentationModel<ProductModel> {
                 .findAny()
                 .ifPresent(feature ->  this.amountInStock = feature.getFeatureValue());
         setSpecification(product);
+        addLinks(product);
     }
 
     private void setSpecification(Product product) {
@@ -80,6 +84,23 @@ public class ProductModel extends RepresentationModel<ProductModel> {
                         specification.put(feature.getFeatureName(), feature.getFeatureValue()));
             }
         }
+    }
+
+    private void addLinks(Product entity) {
+        this.add(List.of(
+                // link do strony produktu
+                linkTo(methodOn(ProductController.class)
+                        .getProduct(entity.getId()))
+                        .withSelfRel(),
+                // link do dodania produktu do koszyka
+                linkTo(methodOn(ProductController.class)
+                        .putProductToShoppingCart(1, entity.getId()))
+                        .withRel("shopping_cart").withName("add"),
+                // link to usunięcia produktu jak zostanie dodany do koszyka
+                linkTo(methodOn(ProductController.class)
+                        .deleteProductFromCart(entity.getId()))
+                        .withRel("shopping_cart").withName("remove")
+        ));
     }
 
 
