@@ -82,7 +82,7 @@ public class Feature {
 
     public Feature() {}
 
-    public Feature( boolean basicInformation, //Category category,
+    public Feature(boolean basicInformation, //Category category,
                    @NotEmpty @NotBlank String featureSearchingDescriptor,
                    @NotEmpty @NotBlank String featureName,
                    @NotEmpty @NotBlank String featureValue) {

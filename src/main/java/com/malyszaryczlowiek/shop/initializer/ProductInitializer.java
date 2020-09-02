@@ -1,5 +1,8 @@
 package com.malyszaryczlowiek.shop.initializer;
 
+import com.malyszaryczlowiek.shop.feature.Feature;
+import com.malyszaryczlowiek.shop.feature.FeatureRepository;
+import com.malyszaryczlowiek.shop.products.ProductRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.ApplicationArguments;
@@ -14,20 +17,31 @@ import org.springframework.core.annotation.Order;
 @Order(3)
 public class ProductInitializer implements ApplicationRunner {
 
-    /*
-    private final ProductRepository productRepository;
+
+    //private final ProductRepository productRepository;
+    private final FeatureRepository featureRepository;
 
 
-    ProductInitializer(ProductRepository productRepository) {
-        this.productRepository = productRepository;
+    ProductInitializer(//ProductRepository productRepository,
+                       FeatureRepository featureRepository) {
+        //this.productRepository = productRepository;
+        this.featureRepository = featureRepository;
     }
-*/
+
 
     private final Logger logger = LoggerFactory.getLogger(ProductInitializer.class);
 
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        logger.trace("products initialized");
+        Feature cpu = new Feature(false, "cpu", "Processor", "i9-9600");
+        Feature prize = new Feature(true, "prize", "Prize", "8999.00");
+        featureRepository.save(cpu);
+        featureRepository.saveAndFlush(prize);
+
+
+        logger.debug("categories added");
+
+        logger.debug("products initialized");
     }
 }

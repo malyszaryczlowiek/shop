@@ -1,7 +1,6 @@
 package com.malyszaryczlowiek.shop.shoppingCart;
 
 
-import com.malyszaryczlowiek.shop.productOrder.ProductOrder;
 import com.malyszaryczlowiek.shop.products.Product;
 
 import org.springframework.context.annotation.Scope;
@@ -9,9 +8,7 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 
@@ -36,8 +33,7 @@ public class ShoppingCart {
             Integer total = productsInCart.get(product) + number;
             productsInCart.replace(product, total);
         }
-        else
-            productsInCart.putIfAbsent(product, number);
+        else productsInCart.put(product, number);
     }
 
     public boolean removeProduct(Product product) {

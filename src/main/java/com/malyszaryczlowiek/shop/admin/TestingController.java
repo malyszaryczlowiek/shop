@@ -1,6 +1,8 @@
 package com.malyszaryczlowiek.shop.admin;
 
 import com.malyszaryczlowiek.shop.client.Client;
+import com.malyszaryczlowiek.shop.feature.Feature;
+import com.malyszaryczlowiek.shop.feature.FeatureRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -26,6 +28,13 @@ import java.util.*;
 public class TestingController {
 
     Logger logger = LoggerFactory.getLogger(AdminProductAndCategoryController.class);
+    private final FeatureRepository featureRepository;
+
+
+    TestingController(FeatureRepository featureRepository) {
+        this.featureRepository = featureRepository;
+
+    }
 
 
     /**
@@ -206,6 +215,12 @@ public class TestingController {
     ResponseEntity<Client> getClient() {
         Client client = new Client("fake@email.com", Integer.valueOf("123456789"), "jakiś pass" ) ;
         return ResponseEntity.status(HttpStatus.OK).body(client);
+    }
+
+    @RequestMapping(path = "/featureMap", method = RequestMethod.GET)
+    ResponseEntity< List<String[]>> getFeatureMap() {
+        List<String[]> list = featureRepository.getDescriptorMap();
+        return ResponseEntity.status(HttpStatus.OK).body(list);
     }
 
 }
