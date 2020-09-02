@@ -1,6 +1,7 @@
 package com.malyszaryczlowiek.shop.shoppingCart;
 
 
+import com.malyszaryczlowiek.shop.productOrder.ProductOrder;
 import com.malyszaryczlowiek.shop.products.Product;
 
 import org.springframework.context.annotation.Scope;
@@ -8,7 +9,9 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -28,12 +31,13 @@ public class ShoppingCart {
      */
     private final Map<Product, Integer> productsInCart = new HashMap<>();
 
-
-
-
-
     public void addProduct(Product product, Integer number) {
-        productsInCart.putIfAbsent(product, number);
+        if (productsInCart.containsKey(product)) {
+            Integer total = productsInCart.get(product) + number;
+            productsInCart.replace(product, total);
+        }
+        else
+            productsInCart.putIfAbsent(product, number);
     }
 
     public boolean removeProduct(Product product) {
@@ -48,4 +52,48 @@ public class ShoppingCart {
         return productsInCart.containsKey(productToDelete);
     }
 
+
+
+    /*
+    Wersja druga gdzie przechowujemy ProductOrdery zamiast mapy productów i ich liczby
+    */
+
+    /*
+    private final List<ProductOrder> productOrderList = new ArrayList<>(2);
+
+    public List<ProductOrder> getProductOrderList() {
+        return productOrderList;
+    }
+
+    public void addProductOrder(ProductOrder productOrder) {
+
+    }
+     */
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

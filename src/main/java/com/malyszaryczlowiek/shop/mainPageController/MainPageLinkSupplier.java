@@ -1,11 +1,10 @@
 package com.malyszaryczlowiek.shop.mainPageController;
 
 import com.malyszaryczlowiek.shop.client.ClientAccountController;
-import com.malyszaryczlowiek.shop.client.ClientShoppingCartController;
 import com.malyszaryczlowiek.shop.order.OrderController;
 
+import com.malyszaryczlowiek.shop.shoppingCart.ShoppingCartController;
 import org.springframework.hateoas.Link;
-import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,8 +32,8 @@ public class MainPageLinkSupplier {
                 .withRel("client_side"));
 
         // link do koszyka
-        listOfLinks.add(linkTo(methodOn(ClientShoppingCartController.class).getShoppingCart())
-                .withRel("client_shopping_cart"));
+        listOfLinks.add(linkTo(methodOn(ShoppingCartController.class).getShoppingCart())
+                .withRel("shopping_cart"));
 
         // link do moich zamówień
         listOfLinks.add(linkTo(methodOn(OrderController.class))

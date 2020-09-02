@@ -9,11 +9,12 @@ public class ShoppingCartModelAssembler implements RepresentationModelAssembler<
     //TODO not implemented
     @Override
     public ShoppingCartModel toModel(ShoppingCart entity) {
-        ShoppingCartModel model = new ShoppingCartModel(entity);
-        //model.add(dodać linki);
-        return model;
+        return new ShoppingCartModel(entity);
     }
 
+    /**
+     * Tego nie trzeba implementować bo nigdy nie będziemy przerabiali więcej niż jednego koszyka
+     */
     @Override
     public CollectionModel<ShoppingCartModel> toCollectionModel(Iterable<? extends ShoppingCart> entities) {
         return null;

@@ -3,6 +3,7 @@ package com.malyszaryczlowiek.shop.order;
 import com.malyszaryczlowiek.shop.client.Client;
 import com.malyszaryczlowiek.shop.feature.Feature;
 import com.malyszaryczlowiek.shop.productOrder.ProductOrder;
+import com.malyszaryczlowiek.shop.products.Product;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
@@ -56,14 +57,23 @@ public class Order {
     private final List<ProductOrder> listOfProducts = new ArrayList<>();
 
 
+    /**
+     * możliwe do przyjęcia statusy to:
+     * Completed, In progress, Cancelled,
+     */
+    @Column(name = "status", nullable = false)
+    private String status;
+
+
 
 
 
 
     public Order() {}
 
-    public Order(Client client) {
-        this.client = client;
+    public Order(List<ProductOrder> productOrders , String status) {
+        this.listOfProducts.addAll(productOrders);
+        this.status = status;
     }
 
     public String getTotalPrize() {
@@ -99,7 +109,15 @@ public class Order {
         return listOfProducts;
     }
 
-    // todo to reimplement
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    // todo to reimplement?
     public void setListOfProducts(List<ProductOrder> listOfProducts) {
         this.listOfProducts.clear();
         this.listOfProducts.addAll(listOfProducts);

@@ -143,6 +143,15 @@ public class Product { //extends Feature
 
 
 
+
+
+
+
+
+
+
+
+
 // TODO można jeszcze zdefiniowac popularność jako liczbę sprzedanych sztuk w ciągu ostatniego miesiąca
 // można też dodać parametr oznaczający promocję / nowość / ostatnie sztuki gdy jest mniej niż 5
 

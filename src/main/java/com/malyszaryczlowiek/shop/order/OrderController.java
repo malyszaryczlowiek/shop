@@ -14,7 +14,7 @@ public class OrderController {
     private final ShoppingCart shoppingCart;
 
     @Autowired
-    OrderController(ShoppingCart shoppingCart) {
+    public OrderController(ShoppingCart shoppingCart) {
         this.shoppingCart = shoppingCart;
     }
 

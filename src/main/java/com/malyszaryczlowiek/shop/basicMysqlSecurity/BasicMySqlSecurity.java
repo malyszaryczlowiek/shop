@@ -39,10 +39,9 @@ public class BasicMySqlSecurity extends WebSecurityConfigurerAdapter {
         http.authorizeRequests()
                 .antMatchers("/admin", "/admin/**", "/users/**",
                         "/testing/**").hasRole("ADMIN") // "/getClientAccount"
-                .antMatchers("/myOrders","/myOrders/**", "/myAccount",
-                        "/shoppingCart").hasRole("CLIENT")
+                .antMatchers("/myOrders","/myOrders/**", "/myAccount").hasRole("CLIENT")
                 .antMatchers("/", "/createAccount", "/product",
-                        "/product/**", "/search").permitAll()
+                        "/product/**", "/search", "/shoppingCart").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .httpBasic()
