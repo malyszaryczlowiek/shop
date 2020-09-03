@@ -32,7 +32,7 @@ public class MainPageLinkSupplier {
                 .withRel("client_side"));
 
         // link do koszyka
-        listOfLinks.add(linkTo(methodOn(ShoppingCartController.class).getShoppingCart())
+        listOfLinks.add(linkTo(methodOn(ShoppingCartController.class).getShoppingCart(0,10))
                 .withRel("shopping_cart"));
 
         // link do moich zamówień

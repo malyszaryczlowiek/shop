@@ -106,7 +106,7 @@ public class ProductController {
 
     @RequestMapping(path = "/{section}/{category}/{subcategory}/search", method = RequestMethod.POST)
     public ResponseEntity<Page<ProductModel>> getProductsFromSearchingCriteria(
-            @RequestBody SearchingCriteria searchingCriteria,
+            @RequestBody SearchingCriteria searchingCriteria, // kryteria wyszukiwawcze
             @PathVariable(name = "section") String section,
             @PathVariable(name = "category") String category,
             @PathVariable(name = "subcategory") String subcategory,
@@ -148,7 +148,10 @@ public class ProductController {
             searchingCriteria.getSearchingParameters().forEach( (descriptorToFind, listOfValues) -> {
                 Iterator<Product> productIterator = listOfProducts.iterator();
                 while (productIterator.hasNext()) {
-                    boolean doesProductFulfilSearchingCriteria = productIterator.next().getSpecification().stream().anyMatch(
+                    boolean doesProductFulfilSearchingCriteria = productIterator.next()
+                            .getSpecification()
+                            .stream()
+                            .anyMatch(
                             // pierwszy warunek sprawdza czy feature ma ten descryptor
                             feature -> feature.getFeatureSearchingDescriptor().equals(descriptorToFind)
                                     // jeśli go ma to sprawdza czy wartość tego descryptora
@@ -157,8 +160,7 @@ public class ProductController {
                             // jeśli to zwróci true to znaczy, że produkt zawiera feature ze wskazaną wartością
                             // i nie należy go usówać
                     );
-                    if ( !doesProductFulfilSearchingCriteria )
-                        productIterator.remove();
+                    if ( !doesProductFulfilSearchingCriteria ) productIterator.remove();
                 }
             });
         }

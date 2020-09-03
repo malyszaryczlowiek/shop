@@ -35,8 +35,10 @@ public class ProductInitializer implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) throws Exception {
         Feature cpu = new Feature(false, "cpu", "Processor", "i9-9600");
+        Feature cpu2 = new Feature(false, "cpu", "Processor", "i9-12000");
         Feature prize = new Feature(true, "prize", "Prize", "8999.00");
         featureRepository.save(cpu);
+        featureRepository.save(cpu2);
         featureRepository.saveAndFlush(prize);
 
 
