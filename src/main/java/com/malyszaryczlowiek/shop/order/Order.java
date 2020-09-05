@@ -67,15 +67,16 @@ public class Order {
 
 
     @Column(name = "order_date", nullable = false)
-    private LocalDateTime orderDate;
+    private Long orderDate;
 
 
 
     public Order() {}
 
-    public Order(List<ProductOrder> productOrders , String status) {
+    public Order(List<ProductOrder> productOrders, String status, Long orderDate) {
         this.listOfProducts.addAll(productOrders);
         this.status = status;
+        this.orderDate = orderDate;
     }
 
     public String getTotalPrize() {
@@ -86,7 +87,7 @@ public class Order {
             //new BigDecimal(productOrder.getProduct().getPrize().getFeatureValue());
             BigDecimal productPrize = new BigDecimal(l.get(0).getFeatureValue());
             for (int i  = 0; i < productOrder.getNumberOfOrderedProducts(); ++i )
-                totalPrize.add(productPrize);
+                totalPrize = totalPrize.add(productPrize);
         }
         return totalPrize.toPlainString();
     }
@@ -119,12 +120,12 @@ public class Order {
         this.status = status;
     }
 
-    public LocalDateTime getOrderDate() {
+    public Long getOrderDate() {
         return orderDate;
     }
 
-    public void setOrderDate(LocalDateTime dateOfOrder) {
-        this.orderDate = dateOfOrder;
+    public void setOrderDate(Long orderDate) {
+        this.orderDate = orderDate;
     }
 
     // todo to reimplement?

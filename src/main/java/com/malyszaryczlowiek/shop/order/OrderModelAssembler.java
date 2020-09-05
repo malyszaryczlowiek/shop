@@ -10,6 +10,9 @@ public class OrderModelAssembler implements RepresentationModelAssembler<Order, 
         return new OrderModel(entity);
     }
 
+    /**
+     * always must return null
+     */
     @Override
     public CollectionModel<OrderModel> toCollectionModel(Iterable<? extends Order> entities) {
         return null;

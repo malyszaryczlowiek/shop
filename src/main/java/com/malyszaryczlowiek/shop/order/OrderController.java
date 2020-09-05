@@ -4,6 +4,8 @@ import com.malyszaryczlowiek.shop.client.Client;
 import com.malyszaryczlowiek.shop.client.ClientRepository;
 import com.malyszaryczlowiek.shop.controllerUtil.ControllerUtil;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,6 +15,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.PositiveOrZero;
+import java.time.LocalDateTime;
 
 /**
  * Do kontrolera ma dostęp tylko USER.
@@ -24,6 +27,8 @@ import javax.validation.constraints.PositiveOrZero;
 @RestController
 @RequestMapping("/myOrders")
 public class OrderController {
+
+    private final Logger logger = LoggerFactory.getLogger(OrderController.class);
 
     private final OrderRepository orderRepository;
     private final ClientRepository clientRepository;
@@ -45,13 +50,24 @@ public class OrderController {
             @RequestParam(name = "size", defaultValue = "10", required = false) @PositiveOrZero int size,
             @RequestParam(name = "sort", defaultValue = "d", required = false) String sorting,
             @RequestParam(name = "sortBy", defaultValue = "orderDate", required = false) String sortBy,
+            @RequestParam(name = "after", required = false) Long after,
+            @RequestParam(name = "before", required = false) Long before,
             Authentication authentication) {
 
         Pageable pageable = controllerUtil.setPaging(page, size, sorting, sortBy);
         String email = authentication.getName();
         Client client = clientRepository.findByEmail(email);
         if (client != null) {
-            Page<Order> orders = orderRepository.findOrdersByClient(client, pageable);
+            Page<Order> orders;
+            if (after != null && before != null)
+                orders = orderRepository.findOrdersByClientBetween(client, after, before, pageable);
+            else if (after == null && before != null)
+                orders = orderRepository.findOrdersByClientBefore(client, before, pageable);
+            else if (after != null)
+                orders = orderRepository.findOrdersByClientAfter(client, after, pageable);
+            else
+                orders = orderRepository.findOrdersByClient(client, pageable);
+
             OrderModelAssembler assembler = new OrderModelAssembler();
             return ResponseEntity.status(HttpStatus.OK).body(orders.map(assembler::toModel));
         }
@@ -59,18 +75,24 @@ public class OrderController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
+}
 
 
-    @RequestMapping(path = "/{id}", method = RequestMethod.GET)
+
+
+
+
+
+
+
+
+
+/*
+@RequestMapping(path = "/{id}", method = RequestMethod.GET)
     public String getConcreteOrder(@PathVariable(name = "id") Long id) {
 
 
 
         return "concrete order: " + id;
     }
-
-
-
-
-
-}
+ */

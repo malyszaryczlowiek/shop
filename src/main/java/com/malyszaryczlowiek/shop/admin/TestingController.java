@@ -12,6 +12,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.support.SessionStatus;
 
@@ -21,6 +22,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.security.Principal;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.*;
 
 @RestController
@@ -218,9 +221,26 @@ public class TestingController {
     }
 
     @RequestMapping(path = "/featureMap", method = RequestMethod.GET)
-    ResponseEntity< List<String[]>> getFeatureMap() {
+    ResponseEntity<List<String[]>> getFeatureMap() {
         List<String[]> list = featureRepository.getDescriptorMap();
         return ResponseEntity.status(HttpStatus.OK).body(list);
+    }
+
+    @RequestMapping(path = "/requestParam", method = RequestMethod.GET)
+    ResponseEntity<?> requestParam(@RequestParam(name = "before", required = false) Long before) {
+
+        if (before == null) {
+            logger.debug("before is null.");
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        }
+        else {
+            logger.debug("before is NOT null");
+            long now = System.currentTimeMillis();
+            LocalDateTime date = LocalDateTime.ofEpochSecond(now,0, ZoneOffset.ofHours(0));
+            LocalDateTime date2 = LocalDateTime.ofEpochSecond(before,0, ZoneOffset.ofHours(2));
+            logger.debug("now is: " + date + " and ofset is: " + date2);
+            return ResponseEntity.status(HttpStatus.OK).body(date);
+        }
     }
 
 }

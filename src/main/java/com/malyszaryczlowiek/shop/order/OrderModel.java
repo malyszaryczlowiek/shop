@@ -7,7 +7,11 @@ import java.util.List;
 
 public class OrderModel extends RepresentationModel<OrderModel> {
 
+    // TODO to implement
+    // trzeba zaimplementować List<ProductOrderModel> gdize
+    // ProductOrderModel zawiera ProductModel itd
 
+    to implement
 
     public OrderModel(Order order) {
 

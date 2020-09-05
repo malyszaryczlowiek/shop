@@ -1,5 +1,13 @@
 package com.malyszaryczlowiek.shop.shoppingCart;
 
+import com.malyszaryczlowiek.shop.client.Client;
+import com.malyszaryczlowiek.shop.client.ClientRepository;
+import com.malyszaryczlowiek.shop.order.Order;
+import com.malyszaryczlowiek.shop.order.OrderModel;
+import com.malyszaryczlowiek.shop.order.OrderModelAssembler;
+import com.malyszaryczlowiek.shop.order.OrderRepository;
+import com.malyszaryczlowiek.shop.productOrder.ProductOrder;
+import com.malyszaryczlowiek.shop.productOrder.ProductOrderRepository;
 import com.malyszaryczlowiek.shop.products.Product;
 import com.malyszaryczlowiek.shop.products.ProductModel;
 import com.malyszaryczlowiek.shop.products.ProductRepository;
@@ -11,11 +19,13 @@ import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.WebApplicationContext;
 
 import javax.validation.Valid;
 import javax.validation.constraints.PositiveOrZero;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -34,11 +44,20 @@ public class ShoppingCartController {
 
     private final ShoppingCart shoppingCart;
     private final ProductRepository productRepository;
+    private final ProductOrderRepository productOrderRepository;
+    private final OrderRepository orderRepository;
+    private final ClientRepository clientRepository;
 
     public ShoppingCartController(ShoppingCart shoppingCart,
-                                  ProductRepository productRepository) {
+                                  ProductRepository productRepository,
+                                  ProductOrderRepository productOrderRepository,
+                                  OrderRepository orderRepository,
+                                  ClientRepository clientRepository) {
         this.shoppingCart= shoppingCart;
         this.productRepository = productRepository;
+        this.productOrderRepository = productOrderRepository;
+        this.orderRepository = orderRepository;
+        this.clientRepository = clientRepository;
     }
 
 
@@ -112,27 +131,49 @@ public class ShoppingCartController {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
     /**
+     * metoda przekształca product ordery w ordery.
+     *
      * z zabezpieczania za pomocą {@link Secured @Secured} można zrezygnować
      * i wpisać wszystko w
      */
     @Secured("ROLE_CLIENT")
     @RequestMapping(value = "/payment", method = RequestMethod.GET)
-    ResponseEntity<?> goToPayment() {
-
-        return ResponseEntity.status(HttpStatus.OK).build();
+    ResponseEntity<OrderModel> goToPayment(Authentication authentication) {
+        String email = authentication.getName();
+        Client client = clientRepository.findByEmail(email);
+        if (client != null) {
+            Map<Product, Integer> orderedProducts = shoppingCart.getAllProductsInShoppingCart();
+            List<ProductOrder> listOfProductOrder = new ArrayList<>(orderedProducts.size());
+            orderedProducts.forEach( (prod, numb) -> listOfProductOrder.add(new ProductOrder(prod, numb)));
+            List<ProductOrder> finalList = productOrderRepository.saveAll(listOfProductOrder);
+            Order order = new Order(finalList, "Completed", System.currentTimeMillis());
+            order.setClient(client);
+            Order injectedOrder = orderRepository.saveAndFlush(order);
+            OrderModelAssembler assembler = new OrderModelAssembler(); trzeba jeszcze zaimplementować OrderModel
+            return ResponseEntity.status(HttpStatus.OK).body(assembler.toModel(injectedOrder));
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
-
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
