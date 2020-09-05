@@ -1,9 +1,8 @@
 package com.malyszaryczlowiek.shop.products;
 
 import com.malyszaryczlowiek.shop.feature.Feature;
+import com.malyszaryczlowiek.shop.shoppingCart.ShoppingCartController;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.hateoas.RepresentationModel;
 
 import java.util.LinkedHashMap;
@@ -21,8 +20,6 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
  * @see com.malyszaryczlowiek.shop.client.ClientModel ClientModel
  */
 public class ProductModel extends RepresentationModel<ProductModel> {
-
-    //private final Logger logger = LoggerFactory.getLogger(ProductModel.class);
 
     private final String section;
     private final String category;
@@ -92,17 +89,28 @@ public class ProductModel extends RepresentationModel<ProductModel> {
                 linkTo(methodOn(ProductController.class)
                         .getProduct(entity.getId()))
                         .withSelfRel(),
-                // link do dodania produktu do koszyka
-                linkTo(methodOn(ProductController.class)
-                        .putProductToShoppingCart(1, entity.getId()))
-                        .withRel("shopping_cart").withName("add"),
-                // link to usunięcia produktu jak zostanie dodany do koszyka
-                linkTo(methodOn(ProductController.class)
-                        .deleteProductFromCart(entity.getId()))
-                        .withRel("shopping_cart").withName("remove")
+                // link do dodania produktu do koszyka ze strony produktu
+                linkTo(methodOn(ShoppingCartController.class)
+                        .addProductToShoppingCart(entity, 0,10))
+                        .withRel("shopping_cart").withName("add_product"),
+                // link to usunięcia produktu jak zostanie dodany do koszyka ze strony produktu
+                linkTo(methodOn(ShoppingCartController.class)
+                        .removeProductFromShoppingCart(entity,0,10))
+                        .withRel("shopping_cart").withName("remove_product")
         ));
     }
 
+
+                /*
+                // link do dodania produktu do koszyka ze strony produktu
+                linkTo(methodOn(ProductController.class)
+                        .putProductToShoppingCart(1, entity.getId()))
+                        .withRel("shopping_cart").withName("add_and_redirect_to_product_page"),
+                // link to usunięcia produktu jak zostanie dodany do koszyka ze strony produktu
+                linkTo(methodOn(ProductController.class)
+                        .deleteProductFromCart(entity.getId()))
+                        .withRel("shopping_cart").withName("remove_and_redirect_to_product_page")
+                 */
 
 
     public String getProductName() {

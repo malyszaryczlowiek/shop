@@ -10,6 +10,7 @@ import org.hibernate.annotations.FetchMode;
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -65,7 +66,8 @@ public class Order {
     private String status;
 
 
-
+    @Column(name = "order_date", nullable = false)
+    private LocalDateTime orderDate;
 
 
 
@@ -115,6 +117,14 @@ public class Order {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public LocalDateTime getOrderDate() {
+        return orderDate;
+    }
+
+    public void setOrderDate(LocalDateTime dateOfOrder) {
+        this.orderDate = dateOfOrder;
     }
 
     // todo to reimplement?

@@ -4,6 +4,8 @@ import com.malyszaryczlowiek.shop.products.Product;
 import com.malyszaryczlowiek.shop.products.ProductModel;
 import com.malyszaryczlowiek.shop.products.ProductModelAssembler;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
@@ -28,8 +30,8 @@ public class ShoppingCart {
      *
      * LinkHashMapa powala nam mieć już produkty ułożone w kolejności dodawania do koszyka.
      */
-    ///*
     private final Map<Product, Integer> productsInCart = new LinkedHashMap<>();
+    private final Logger logger = LoggerFactory.getLogger(ShoppingCart.class);
 
     public void addProduct(Product product, Integer number) {
         if (productsInCart.containsKey(product)) {
@@ -37,6 +39,7 @@ public class ShoppingCart {
             productsInCart.replace(product, total);
         }
         else productsInCart.put(product, number);
+        logger.debug("product added to shopping cart");
     }
 
     public boolean removeProduct(Product product) {
@@ -54,14 +57,12 @@ public class ShoppingCart {
     public List<Map.Entry<ProductModel,Integer>> getListOfProductModels() {
         List<Map.Entry<ProductModel,Integer>> entryList = new ArrayList<>(productsInCart.size());
         ProductModelAssembler assembler = new ProductModelAssembler();
-        productsInCart.forEach((k,v) -> {
+        productsInCart.forEach( (k,v) -> {
             Map.Entry<ProductModel,Integer> entry = Map.entry(assembler.toModel(k), v);
             entryList.add(entry);
         });
         return entryList;
     }
-
-     //*/
 
 
 

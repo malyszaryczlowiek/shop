@@ -10,16 +10,23 @@ import com.malyszaryczlowiek.shop.shoppingCart.ShoppingCart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.WebApplicationContext;
 
+import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import java.util.Iterator;
 import java.util.List;
 
-
+/**
+ * sprawdzić czy nie będzie trzeba oznaczyć go jako
+ * WebApplicationContext.SCOPE_SESSION
+ */
+@Scope(scopeName = WebApplicationContext.SCOPE_SESSION)
 @RestController
 @RequestMapping(path = "/product")
 public class ProductController {
@@ -97,13 +104,15 @@ public class ProductController {
             @RequestParam(name = "size", defaultValue = "20", required = false) @PositiveOrZero int size,
             @RequestParam(name = "sort", defaultValue = "d", required = false) String sorting,
             @RequestParam(name = "sortBy", defaultValue = "popularity", required = false) String sortBy) {
-        //Pageable pageable = controllerUtil.setPaging(0, 20, "a", "productName");
+
         Pageable pageable = controllerUtil.setPaging(page, size, sorting, sortBy);
         return getProducts(section, category, subcategory, null, pageable);
     }
 
 
-
+    /**
+     * Wyszukiwanie produktów po ich paramtrach.
+     */
     @RequestMapping(path = "/{section}/{category}/{subcategory}/search", method = RequestMethod.POST)
     public ResponseEntity<Page<ProductModel>> getProductsFromSearchingCriteria(
             @RequestBody SearchingCriteria searchingCriteria, // kryteria wyszukiwawcze
@@ -115,6 +124,7 @@ public class ProductController {
             @RequestParam(name = "size", defaultValue = "20", required = false) @PositiveOrZero int size,
             @RequestParam(name = "sort", defaultValue = "d", required = false) String sorting,
             @RequestParam(name = "sortBy", defaultValue = "popularity", required = false) String sortBy) {
+
         Pageable pageable = controllerUtil.setPaging(page, size, sorting, sortBy);
         return getProducts(section, category, subcategory, searchingCriteria, pageable);
     }
@@ -174,6 +184,45 @@ public class ProductController {
                 .body(pageOfProducts.map(assembler::toModel));
     }
 
+/*
+    @RequestMapping(path = "/{section}/{category}/{subcategory}", method = RequestMethod.PUT)
+    public ResponseEntity<String> addProductToShoppingCart(
+            @RequestBody Product product) {
+        return addProd(product);
+    }
+
+    @RequestMapping(path = "/{section}/{category}/{subcategory}/search", method = RequestMethod.PUT)
+    public ResponseEntity<String> addProductToShoppingCartSearch(
+            @RequestBody Product product) {
+        return addProd(product);
+    }
+
+    private ResponseEntity<String> addProd(Product product) {
+        Example<Product> example = Example.of(product);
+        if (productRepository.exists(example)) {
+            productRepository.findOne(example).ifPresent(
+                    realProduct -> shoppingCart.addProduct(realProduct, 1));
+            logger.debug("product added to shopping cart");
+            return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+        }
+        return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(
+                "Nie można dodać do koszyka produktu, którego nie ma w bazie.");
+    }
+
+    @RequestMapping(path = "/{section}/{category}/{subcategory}/search", method = RequestMethod.DELETE)
+    public ResponseEntity<String> removeProductFromCart(
+            @RequestBody Product product) {
+        Example<Product> example = Example.of(product);
+        if (productRepository.exists(example)) {
+            productRepository.findOne(example).ifPresent(shoppingCart::removeProduct);
+            return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+        }
+        return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(
+                "nie można usunąć produktu z koszyka którego nie ma w bazie");
+    }
+
+ */
+
 
 
     /**
@@ -206,7 +255,7 @@ public class ProductController {
      */
     @RequestMapping(path = "/{id}", method = RequestMethod.PUT)
     public ResponseEntity<String> putProductToShoppingCart(
-            @RequestBody Integer amountOfOrderedProducts, @PathVariable Long id) {
+            @Positive @RequestBody Integer amountOfOrderedProducts, @PathVariable Long id) {
         if (productRepository.existsById(id)) {
             Product product = productRepository.getOne(id);
             shoppingCart.addProduct(product,amountOfOrderedProducts);
