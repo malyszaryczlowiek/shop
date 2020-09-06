@@ -150,7 +150,7 @@ public class ShoppingCartController {
             Order order = new Order(finalList, "Completed", System.currentTimeMillis());
             order.setClient(client);
             Order injectedOrder = orderRepository.saveAndFlush(order);
-            OrderModelAssembler assembler = new OrderModelAssembler(); trzeba jeszcze zaimplementować OrderModel
+            OrderModelAssembler assembler = new OrderModelAssembler();
             return ResponseEntity.status(HttpStatus.OK).body(assembler.toModel(injectedOrder));
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();

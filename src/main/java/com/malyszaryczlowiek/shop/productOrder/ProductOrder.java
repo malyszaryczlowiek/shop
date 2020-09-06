@@ -1,6 +1,5 @@
 package com.malyszaryczlowiek.shop.productOrder;
 
-
 import com.malyszaryczlowiek.shop.products.Product;
 
 import javax.persistence.*;

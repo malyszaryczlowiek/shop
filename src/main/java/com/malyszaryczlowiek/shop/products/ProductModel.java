@@ -96,7 +96,11 @@ public class ProductModel extends RepresentationModel<ProductModel> {
                 // link to usunięcia produktu jak zostanie dodany do koszyka ze strony produktu
                 linkTo(methodOn(ShoppingCartController.class)
                         .removeProductFromShoppingCart(entity,0,10))
-                        .withRel("shopping_cart").withName("remove_product")
+                        .withRel("shopping_cart").withName("remove_product"),
+                // link do kategorii w której znajduje sie produkt
+                linkTo(methodOn(ProductController.class).getAllProductsInSubcategory(
+                        section, category, subcategory, 0, 20, "d", "popularity"))
+                        .withRel("product_category")
         ));
     }
 
