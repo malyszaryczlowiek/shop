@@ -9,6 +9,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+
+/**
+ * Klasa dostarcza model danych w postaci czy dane zamówienie jest
+ * już zrealizowane, kiedy zostało zrealizowane oraz jakie produkty
+ * zawierało.
+ */
 public class OrderModel extends RepresentationModel<OrderModel> {
 
     // TODO to implement

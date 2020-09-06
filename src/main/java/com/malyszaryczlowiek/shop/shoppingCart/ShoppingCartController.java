@@ -63,7 +63,7 @@ public class ShoppingCartController {
 
 
     @RequestMapping(method = RequestMethod.GET)
-    public ResponseEntity<Page<Map.Entry<ProductModel, Integer>>> getShoppingCart(
+    public ResponseEntity<ShoppingCartModel> getShoppingCart(
             @RequestParam(name = "page", defaultValue = "0", required = false) @PositiveOrZero int page,
             @RequestParam(name = "size", defaultValue = "10", required = false) @PositiveOrZero int size)
     {
@@ -72,11 +72,8 @@ public class ShoppingCartController {
 
 
 
-    private ResponseEntity<Page<Map.Entry<ProductModel, Integer>>> returnContentOfShoppingCart(int page, int size) {
-        Pageable pageable = PageRequest.of(page,size);
-        List<Map.Entry<ProductModel, Integer>> list = shoppingCart.getListOfProductModels();
-        Page<Map.Entry<ProductModel, Integer>> ordersPage = new PageImpl<>(list, pageable, list.size());
-        return ResponseEntity.status(HttpStatus.OK).body(ordersPage);
+    private ResponseEntity<ShoppingCartModel> returnContentOfShoppingCart(int page, int size) {
+        return ResponseEntity.status(HttpStatus.OK).body(new ShoppingCartModel(shoppingCart, page, size));
     }
 
 
@@ -86,7 +83,7 @@ public class ShoppingCartController {
      * albo bezpośrednio w koszyku
      */
     @RequestMapping(method = RequestMethod.PUT)
-    public ResponseEntity<Page<Map.Entry<ProductModel, Integer>>> addProductToShoppingCart(
+    public ResponseEntity<ShoppingCartModel> addProductToShoppingCart(
             @Valid @RequestBody Product product,
             @RequestParam(name = "page", defaultValue = "0", required = false) @PositiveOrZero int page,
             @RequestParam(name = "size", defaultValue = "10", required = false) @PositiveOrZero int size) {
@@ -111,7 +108,7 @@ public class ShoppingCartController {
      * albo bezpośrednio w koszyku
      */
     @RequestMapping(method = RequestMethod.DELETE)
-    public ResponseEntity<Page<Map.Entry<ProductModel, Integer>>> removeProductFromShoppingCart(
+    public ResponseEntity<ShoppingCartModel> removeProductFromShoppingCart(
             @Valid @RequestBody Product product,
             @RequestParam(name = "page", defaultValue = "0", required = false) @PositiveOrZero int page,
             @RequestParam(name = "size", defaultValue = "10", required = false) @PositiveOrZero int size) {

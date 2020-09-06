@@ -24,6 +24,9 @@ import java.util.*;
         proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class ShoppingCart {
 
+
+    private final Logger logger = LoggerFactory.getLogger(ShoppingCart.class);
+
     /**
      * nie możywmy użyć tutaj Product order ponieważ odnośi się to tylko
      * do obiektów juz zamówionych i zrealizowanych albo w trakcie realizacji
@@ -31,7 +34,7 @@ public class ShoppingCart {
      * LinkHashMapa powala nam mieć już produkty ułożone w kolejności dodawania do koszyka.
      */
     private final Map<Product, Integer> productsInCart = new LinkedHashMap<>();
-    private final Logger logger = LoggerFactory.getLogger(ShoppingCart.class);
+
 
     public void addProduct(Product product, Integer number) {
         if (productsInCart.containsKey(product)) {

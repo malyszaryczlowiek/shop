@@ -15,7 +15,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.PositiveOrZero;
-import java.time.LocalDateTime;
+
+
 
 /**
  * Do kontrolera ma dostęp tylko USER.
@@ -44,6 +45,9 @@ public class OrderController {
     }
 
 
+    /**
+     * Jedyna metoda w tym kontrolerze. dostarcza stronę z wykonanymi zamówieniami
+     */
     @RequestMapping(method = RequestMethod.GET)
     public ResponseEntity<Page<OrderModel>> getMyOrders(
             @RequestParam(name = "page", defaultValue = "0", required = false) @PositiveOrZero int page,
@@ -67,11 +71,15 @@ public class OrderController {
                 orders = orderRepository.findOrdersByClientAfter(client, after, pageable);
             else
                 orders = orderRepository.findOrdersByClient(client, pageable);
-
+            if (orders.getSize() >0 )
+                logger.debug("Page<Order> ma rozmiar (są to zamówienia użytkownika): " + orders.getSize());
+            else
+                logger.debug("nie ma żadnego zrealizowanego zamówienia. Page<Order> jest pusty");
             OrderModelAssembler assembler = new OrderModelAssembler();
             return ResponseEntity.status(HttpStatus.OK).body(orders.map(assembler::toModel));
         }
         authentication.setAuthenticated(false);
+        logger.debug("Nie udało się uzyskać uwierzytelnienia clienta.");
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 

@@ -86,14 +86,12 @@ public class Product { //extends Feature
 
     public Product(@NotNull Category productCategory, @NotNull Feature productBrand,
                    @NotNull Feature productName, @NotNull Feature prize,
-                   @NotNull Feature accessed, @NotNull Feature amountInStock,
-                   List<Product> components
+                   @NotNull Feature amountInStock, List<Product> components
     ) {
         this.productCategory = productCategory;
         this.specification.add(productBrand);
         this.specification.add(productName);
         this.specification.add(prize);
-        this.specification.add(accessed);
         this.specification.add(amountInStock);
         this.components = components;
     }
