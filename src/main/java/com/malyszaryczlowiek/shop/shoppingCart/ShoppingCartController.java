@@ -65,8 +65,7 @@ public class ShoppingCartController {
     @RequestMapping(method = RequestMethod.GET)
     public ResponseEntity<ShoppingCartModel> getShoppingCart(
             @RequestParam(name = "page", defaultValue = "0", required = false) @PositiveOrZero int page,
-            @RequestParam(name = "size", defaultValue = "10", required = false) @PositiveOrZero int size)
-    {
+            @RequestParam(name = "size", defaultValue = "10", required = false) @PositiveOrZero int size) {
         return returnContentOfShoppingCart(page,size);
     }
 
@@ -134,7 +133,15 @@ public class ShoppingCartController {
      * z zabezpieczania za pomocą {@link Secured @Secured} można zrezygnować
      * i wpisać wszystko w
      */
-    @Secured("ROLE_CLIENT")
+
+    /**
+     * W uuproszczeniu zakładam, ze zakupy może wykonać tylko osoba zalgowana.??
+     * wyłuskuję informacjie o użytkowniku.
+     *
+     * @param authentication obiekt wymagany do wyłuskania informacji o nazwie użytkowanika
+     * @return zwraca wykonane zamówienie.
+     */
+    //@Secured("ROLE_CLIENT")
     @RequestMapping(value = "/payment", method = RequestMethod.GET)
     ResponseEntity<OrderModel> goToPayment(Authentication authentication) {
         String email = authentication.getName();

@@ -17,9 +17,6 @@ import java.util.stream.Collectors;
  */
 public class OrderModel extends RepresentationModel<OrderModel> {
 
-    // TODO to implement
-    // trzeba zaimplementować List<ProductOrderModel> gdize
-    // ProductOrderModel zawiera ProductModel itd
 
     private final List<ProductOrderModel> productOrderModels = new ArrayList<>();
     private final String status;

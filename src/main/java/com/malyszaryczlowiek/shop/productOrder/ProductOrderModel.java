@@ -5,6 +5,10 @@ import com.malyszaryczlowiek.shop.products.ProductModelAssembler;
 
 import org.springframework.hateoas.RepresentationModel;
 
+/**
+ * DONE.
+ *
+ */
 public class ProductOrderModel extends RepresentationModel<ProductOrderModel> {
 
     private final ProductModel productModel;

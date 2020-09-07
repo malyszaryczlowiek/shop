@@ -31,21 +31,22 @@ public class ShoppingCartModel extends RepresentationModel<ShoppingCartModel> {
     public ShoppingCartModel(ShoppingCart shoppingCart, int page, int size) {
         ProductOrderModelAssembler assembler = new ProductOrderModelAssembler();
         List<ProductOrderModel> productList = new ArrayList<>();
-        shoppingCart.getAllProductsInShoppingCart().forEach( (product, integer) -> {
-            ProductOrder productOrder = new ProductOrder(product, integer);
-            productList.add(assembler.toModel(productOrder));
-        });
+        shoppingCart.getAllProductsInShoppingCart().forEach(
+                (product, integer) -> productList.add(assembler.toModel(new ProductOrder(product, integer)))
+        );
         Pageable pageable = PageRequest.of(page,size);
         productsInShoppingCart = new PageImpl<>(productList, pageable, productList.size());
         addLinks();
     }
 
-
+    // dodaje do linków link do już wykonanych zmaówień
+    // TODO sprawdzić czy ten link będzie działał bezpośrednio do jedynej metody.
+    // ważne ma być dodany jeden link do całego modelu a nie do każdego zamówiania
     private void addLinks() {
-        // dodaje do linków link do już wykonanych zmaówień
-        // TODO sprawdzić czy ten link będzie działał bezpośrednio do jedynej metody.
-        // ważne ma być dodany jeden link do całego modelu a nie do każdego zamówiania
-        this.add(linkTo(OrderController.class).withRel("my_orders"));
+        this.add(
+                // link do zamówień użytkownika, ale dostęp do tego linku wymaga uwieerzytelnienia.
+                linkTo(OrderController.class).withRel("my_orders")
+        );
     }
 
     public Page<ProductOrderModel> getProductsInShoppingCart() {

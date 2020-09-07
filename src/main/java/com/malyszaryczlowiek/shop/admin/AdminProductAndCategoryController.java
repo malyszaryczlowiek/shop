@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 public class AdminProductAndCategoryController {
 
     private Logger logger = LoggerFactory.getLogger(AdminProductAndCategoryController.class);
+
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
 
@@ -51,22 +52,21 @@ public class AdminProductAndCategoryController {
      * - usunięcia.
      *
      *
-     * @return
+     * @return zwracam linki do panelu
      */
     @RequestMapping(method = RequestMethod.GET)
-    String welcomeAdminPanel() {
-        return "Welcome Admin Panel";
+    public ResponseEntity<AdminPanelLinkProvider> welcomeAdminPanel() {
+        return ResponseEntity.status(HttpStatus.OK).body(new AdminPanelLinkProvider());
     }
 
 
-    /*
-     * Metody do tworzenia kategorii
-     */
-
 
     /**
-     * metoda zwraca wsystkie sekcje i kategorie wraz z linkami
+     * Metoda zwraca wsystkie sekcje i kategorie wraz z linkami
+     * Żeby móc używac metody sorted() klasa musi implementować interfejs
+     * {@link Comparable}.
      *
+     * @return nie zwracam tutaj Page<> ponieważ nie ma tutaj takiej potrzeby
      */
     @RequestMapping(path = "/c", method = RequestMethod.GET)
     public ResponseEntity<List<Category>> getListOfCategories() {
@@ -199,26 +199,6 @@ public class AdminProductAndCategoryController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // nie można usunąć z bazy produktu którego nie ma
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

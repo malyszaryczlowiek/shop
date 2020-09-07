@@ -1,8 +1,6 @@
 package com.malyszaryczlowiek.shop.shoppingCart;
 
 import com.malyszaryczlowiek.shop.products.Product;
-import com.malyszaryczlowiek.shop.products.ProductModel;
-import com.malyszaryczlowiek.shop.products.ProductModelAssembler;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,8 +54,25 @@ public class ShoppingCart {
     public boolean isProductPutInShoppingCart(Product productToDelete) {
         return productsInCart.containsKey(productToDelete);
     }
+}
 
-    public List<Map.Entry<ProductModel,Integer>> getListOfProductModels() {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+     public List<Map.Entry<ProductModel,Integer>> getListOfProductModels() {
         List<Map.Entry<ProductModel,Integer>> entryList = new ArrayList<>(productsInCart.size());
         ProductModelAssembler assembler = new ProductModelAssembler();
         productsInCart.forEach( (k,v) -> {
@@ -66,8 +81,7 @@ public class ShoppingCart {
         });
         return entryList;
     }
-
-
+     */
 
     /*
     Wersja druga gdzie przechowujemy ProductOrdery zamiast mapy productów i ich liczby
@@ -96,31 +110,3 @@ public class ShoppingCart {
     }
 
      */
-
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
