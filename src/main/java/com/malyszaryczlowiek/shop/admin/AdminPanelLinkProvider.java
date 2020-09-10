@@ -14,7 +14,7 @@ public class AdminPanelLinkProvider extends RepresentationModel<AdminPanelLinkPr
     public AdminPanelLinkProvider() {
         this.add(
                 // link do siebie samego
-                linkTo(AdminProductAndCategoryController.class).withSelfRel(),
+                linkTo(AdminCategoryController.class).withSelfRel(),
                 // link do panela z użytkownikami
                 linkTo(AdminUserController.class).withRel("admin_user_panel"),
                 // main page

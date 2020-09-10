@@ -52,6 +52,10 @@ public class Product { //extends Feature
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
     private Category productCategory;
 
+    // uwaga każdą encję która ma swój egzemplarz w bazie dancyh należy oznaczyć
+    // CascadeType.PERSIST co oznacza, że jeśli dodajemy Product i nie ma tam jeszcze
+    // danej kategorii to zostanie ona dodana automatycznie,
+    // persist oznacza tutaj przechodzenie w stan zarządzany.
 
     // tutaj trzeba jeszcze wszędzie gdzie to potrzebne pouzupełniać popularność
     /*
@@ -70,8 +74,11 @@ public class Product { //extends Feature
 
     /**
      * Z tego co pamiętam to trzeba zawsze zainicjlalizować listę
+     *  TODO tutaj nie oznaczam caskadowości bo inaczej zaciągał bym wszystkie produkty
+     *  a lepiej jest je zaciągnąc tylko jak są nam niezbedne
      */
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY,
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
     private List<Product> components = new ArrayList<>();
 
 

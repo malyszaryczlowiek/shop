@@ -1,7 +1,6 @@
 package com.malyszaryczlowiek.shop.admin;
 
 import com.malyszaryczlowiek.shop.client.Client;
-import com.malyszaryczlowiek.shop.feature.Feature;
 import com.malyszaryczlowiek.shop.feature.FeatureRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +29,7 @@ import java.util.*;
 @RequestMapping("/testing")
 public class TestingController {
 
-    Logger logger = LoggerFactory.getLogger(AdminProductAndCategoryController.class);
+    Logger logger = LoggerFactory.getLogger(AdminCategoryController.class);
     private final FeatureRepository featureRepository;
 
 

@@ -1,6 +1,5 @@
 package com.malyszaryczlowiek.shop.feature;
 
-import com.malyszaryczlowiek.shop.categories.Category;
 import com.malyszaryczlowiek.shop.products.Product;
 
 import javax.persistence.*;

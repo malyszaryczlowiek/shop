@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
  * Dostęp tylko dla ADMINA.
  */
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/admin/users")
 public class AdminUserController {
 
     private final ClientRepository clientRepository;
