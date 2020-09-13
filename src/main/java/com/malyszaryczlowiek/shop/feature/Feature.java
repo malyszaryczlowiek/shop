@@ -1,6 +1,7 @@
 package com.malyszaryczlowiek.shop.feature;
 
 import com.malyszaryczlowiek.shop.products.Product;
+import org.hibernate.annotations.Fetch;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -18,19 +19,6 @@ public class Feature {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "feature_id", unique = true)
     private Long id;
-
-    /**
-     * kategoria musi być tutaj obecna tak aby nie dochodziło do kuriozów
-     * w strylu: szukaj po procesorze dla komputerów i będzie wyszukiwało
-     * po procesorze dla telefonów/urządzeń mobilnych.
-     * EDIT: Wyszukiwanie w ProductController nie wykorzystuje sprawdzania
-     * kategorii wyłuskiwanej z Feature.
-     */
-    /*
-    @NotNull
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
-    private Category category;
-     */
 
 
     /**
@@ -76,6 +64,8 @@ public class Feature {
      */
     @ManyToMany(mappedBy = "specification",
             cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
+    // @JoinTable(to implement)
+    // @Fetch(to choose)
     private final List<Product> products = new ArrayList<>();
 
 
@@ -99,16 +89,6 @@ public class Feature {
     public void setId(Long id) {
         this.id = id;
     }
-
-    /*
-    public Category getCategory() {
-        return category;
-    }
-
-    public void setCategory(Category category) {
-        this.category = category;
-    }
-     */
 
     public boolean isBasicInformation() {
         return basicInformation;
@@ -150,3 +130,28 @@ public class Feature {
         this.products.addAll(products);
     }
 }
+
+
+
+/*
+ * kategoria musi być tutaj obecna tak aby nie dochodziło do kuriozów
+ * w strylu: szukaj po procesorze dla komputerów i będzie wyszukiwało
+ * po procesorze dla telefonów/urządzeń mobilnych.
+ * EDIT: Wyszukiwanie w ProductController nie wykorzystuje sprawdzania
+ * kategorii wyłuskiwanej z Feature.
+ */
+    /*
+    @NotNull
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
+    private Category category;
+     */
+
+/*
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+     */

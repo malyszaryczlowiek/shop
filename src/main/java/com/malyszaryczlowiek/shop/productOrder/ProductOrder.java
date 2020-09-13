@@ -70,13 +70,24 @@ public class ProductOrder {
                 .get(0)
                 .getFeatureValue();
         BigDecimal productPrize = new BigDecimal(prize);
-        BigDecimal totalPrize = new BigDecimal("0.00");
+        BigDecimal totalPrize = new BigDecimal("0.00"); // initialize total prize
         for (int i = 0; i < numberOfOrderedProducts; i++)
             totalPrize = totalPrize.add(productPrize);
         //IntStream.range(0, numberOfOrderedProducts).collect((u) -> totalPrize, (i) -> totalPrize.add(productPrize), totalPrize )
-        return new BigDecimal(prize);
+        return totalPrize;
     }
 }
+
+
+
+
+
+
+
+
+
+
+
 
 
 /*

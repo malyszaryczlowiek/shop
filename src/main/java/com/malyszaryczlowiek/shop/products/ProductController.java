@@ -106,12 +106,14 @@ public class ProductController {
             @RequestParam(name = "sortBy", defaultValue = "popularity", required = false) String sortBy) {
 
         Pageable pageable = controllerUtil.setPaging(page, size, sorting, sortBy);
-        return getProducts(section, category, subcategory, null, pageable);
+        List<Category> categories = categoryRepository.findSubcategory(section, category, subcategory);
+        return getProducts(categories, null, pageable);
     }
 
 
     /**
-     * Wyszukiwanie produktów po ich paramtrach.
+     * Wyszukiwanie produktów po ich paramtrach. Parametry wyszukiwania zawarte są w
+     * obiekcie {@link SearchingCriteria}.
      */
     @RequestMapping(path = "/{section}/{category}/{subcategory}/search", method = RequestMethod.POST)
     public ResponseEntity<Page<ProductModel>> getProductsFromSearchingCriteria(
@@ -126,7 +128,8 @@ public class ProductController {
             @RequestParam(name = "sortBy", defaultValue = "popularity", required = false) String sortBy) {
 
         Pageable pageable = controllerUtil.setPaging(page, size, sorting, sortBy);
-        return getProducts(section, category, subcategory, searchingCriteria, pageable);
+        List<Category> categories = categoryRepository.findSubcategory(section, category, subcategory);
+        return getProducts(categories, searchingCriteria, pageable);
     }
 
 
@@ -137,9 +140,8 @@ public class ProductController {
      * ta metoda bardziej obciąża pamięć bo wczytuje dużo danych, które następnie odfiltrowuje,
      * jest natomiast szybsza pod kątem wczytania danych z DB?
      */
-    private ResponseEntity<Page<ProductModel>> getProducts(String section, String category,
-            String subcategory, SearchingCriteria searchingCriteria, Pageable pageable) {
-        List<Category> categories = categoryRepository.findSubcategory(section, category, subcategory);
+    private ResponseEntity<Page<ProductModel>> getProducts(
+            List<Category> categories, SearchingCriteria searchingCriteria, Pageable pageable) {
         if (categories.isEmpty()) {
             logger.debug("jest empty - nie ma takiej sekcji");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();

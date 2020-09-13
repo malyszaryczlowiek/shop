@@ -1,8 +1,12 @@
 package com.malyszaryczlowiek.shop.categories;
 
+import com.malyszaryczlowiek.shop.products.Product;
+import org.hibernate.annotations.BatchSize;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
+import java.util.List;
 
 
 /**
@@ -70,6 +74,7 @@ public class Category implements Comparable<Category> {
      * caskadowo nic nie robimy.
 
     @OneToMany(cascade = {})
+    @BatchSize(size = )
     List<Product> listOfProductsInCategory;
     */
 

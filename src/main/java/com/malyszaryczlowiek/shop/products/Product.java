@@ -2,6 +2,8 @@ package com.malyszaryczlowiek.shop.products;
 
 import com.malyszaryczlowiek.shop.categories.Category;
 import com.malyszaryczlowiek.shop.feature.Feature;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import javax.validation.constraints.*;
@@ -79,12 +81,16 @@ public class Product { //extends Feature
      */
     @ManyToMany(fetch = FetchType.LAZY,
             cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
+    // @JoinTable(to implement)
+    // @Fetch(to choose)
     private List<Product> components = new ArrayList<>();
 
 
 
     @ManyToMany(fetch = FetchType.EAGER,
             cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
+    // @JoinTable(to implement)
+    // @Fetch(to choose)
     private final List<Feature> specification = new ArrayList<>();
 
 

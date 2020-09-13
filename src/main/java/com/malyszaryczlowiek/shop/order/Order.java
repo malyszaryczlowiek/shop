@@ -4,6 +4,7 @@ import com.malyszaryczlowiek.shop.client.Client;
 import com.malyszaryczlowiek.shop.feature.Feature;
 import com.malyszaryczlowiek.shop.productOrder.ProductOrder;
 import com.malyszaryczlowiek.shop.products.Product;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
@@ -35,8 +36,9 @@ public class Order {
     /**
      * fechowanie ustawiamy na Lazy ponieważ nie ma potyrzeby by
      * zaciągać informacji o kliencie przy pobieraniu danych
-     * o zamówieniu.<p></p>
-     * Nie ustawiam caskadingu bo nie ma znaczenia sensu przy
+     * o zamówieniu.
+     * <p></p>
+     * Nie ustawiam caskadingu bo nie ma znaczenia/sensu przy
      * jakiejkowlwiek zmianie usówania ani.
      *
      */
@@ -46,15 +48,23 @@ public class Order {
 
     /**
      * Feczowanie musi być Eager bo zaciągając Order powinniśmy zaciągnąć
-     * zarówno ProductOrdery jak i zawierane przez nie Producty. <p></p>
+     * zarówno ProductOrdery jak i zawierane przez nie Producty.
+     * <p></p>
      * Caskading chyba tylko trzeba refreshing bo Usuwając Order nie
      * powinniśmy usówać ani ProductOrderów ani produktów się w nich
      * znajdujących.
-     *
+     * <p></p>
+     * Ta relacja jest unidirectional ponieważ w encji ProductOrder nie
+     * mamy odwołania do encji Order. Ale  dodajemy do ProductOrder kolumnę
+     * z informacją do jakiego orderu (order_id) należy dany product order.
+     * Dzięki temu nie jest tworzona dodatkowa tabela zawierająca krzyżówkę
+     * kluczy obu tabel.
      */
-    @ManyToMany(fetch = FetchType.EAGER,
-            cascade = {CascadeType.REFRESH})
+    @OneToMany(fetch = FetchType.EAGER,
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
+    @JoinColumn(name = "order_id", referencedColumnName = "order_id")
     @Fetch(FetchMode.SELECT)
+    @BatchSize(size = 10)
     private final List<ProductOrder> listOfProducts = new ArrayList<>();
 
 
