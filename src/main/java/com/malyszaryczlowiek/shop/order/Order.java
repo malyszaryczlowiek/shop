@@ -64,13 +64,13 @@ public class Order {
             cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
     @JoinColumn(name = "order_id", referencedColumnName = "order_id")
     @Fetch(FetchMode.SELECT)
-    @BatchSize(size = 10)
+    @BatchSize(size = 20)
     private final List<ProductOrder> listOfProducts = new ArrayList<>();
 
 
     /**
      * możliwe do przyjęcia statusy to:
-     * Completed, In progress, Cancelled,
+     * Completed, Cancelled,
      */
     @Column(name = "status", nullable = false)
     private String status;

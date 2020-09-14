@@ -52,6 +52,30 @@ public class ProductController {
     }
 
 
+    /**
+     * Wyświetl listę produktów posortowancyh wstępnie po popularności
+     *
+     */
+    @RequestMapping(method = RequestMethod.POST)
+    public ResponseEntity<Page<ProductModel>> getProductsByPhrase(
+            @RequestParam(name = "phrase") String phrase,
+            @RequestParam(name = "page", defaultValue = "0", required = false) @PositiveOrZero int page,
+            @RequestParam(name = "size", defaultValue = "20", required = false) @PositiveOrZero int size,
+            @RequestParam(name = "sort", defaultValue = "d", required = false) String sorting,
+            @RequestParam(name = "sortBy", defaultValue = "popularity", required = false) String sortBy) {
+        if (phrase == null || phrase.isBlank() || phrase.isEmpty())
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        Pageable pageable = controllerUtil.setPaging(page, size, sorting, sortBy);
+        List<Product> listOfProducts = productRepository.findAllProductsWithThisPhrase(phrase);
+        if (listOfProducts.isEmpty())
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        Page<Product> pageOfProducts = new PageImpl<>(listOfProducts, pageable, listOfProducts.size());
+        ProductModelAssembler assembler = new ProductModelAssembler();
+        assembler.setAdditionalSpecification(false);
+        Page<ProductModel> finalPage = pageOfProducts.map(assembler::toModel);
+        return ResponseEntity.status(HttpStatus.OK).body(finalPage);
+    }
+
 
     /**
      * to jest metoda z null string jako kategorią.
@@ -146,16 +170,27 @@ public class ProductController {
             logger.debug("jest empty - nie ma takiej sekcji");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        List<Product> listOfProducts =
-                productRepository.findAllProductsInTheseCategories(categories);
+        /*
+        String phrase;
+        List<Product> listOfProducts;
+        if (searchingCriteria.getSearchingParameters().containsKey("phrase") &&
+                searchingCriteria.getSearchingParameters().get("phrase").size() == 1) {
+            phrase = searchingCriteria.getSearchingParameters().get("phrase").get(0);
+            listOfProducts =
+                    productRepository.findAllProductsInThisCategoryWithThisPhrase(categories, phrase);
+            searchingCriteria.getSearchingParameters().remove("phrase"); // trzeba usunąć
+        }
+        else
+         */
+        List<Product> listOfProducts = productRepository.findAllProductsInTheseCategories(categories);
         if (listOfProducts.size() == 0) {
             logger.debug("nie ma produktów w tej kategorii. ");
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         }
-        ProductModelAssembler assembler = new ProductModelAssembler();
         // jeśli istnieją jakieś niezerowe zadane kryteria wyszukiwania to
         // należy wg. nich odfiltrować wyniki
-        if (searchingCriteria != null && searchingCriteria.getSearchingParameters().size() > 0) {
+        // musi być większe od jeden
+        if ( searchingCriteria.getSearchingParameters().size() > 0) {
             logger.debug("SearchingCriteria nie jest null i ma mapę większa od 0.");
             searchingCriteria.getSearchingParameters().forEach( (descriptorToFind, listOfValues) -> {
                 Iterator<Product> productIterator = listOfProducts.iterator();
@@ -182,48 +217,18 @@ public class ProductController {
         }
         logger.debug("ilość produktów po odfiltrowaniu niepasujących wynosi: " + listOfProducts.size());
         Page<Product> pageOfProducts = new PageImpl<>(listOfProducts, pageable,listOfProducts.size());
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(pageOfProducts.map(assembler::toModel));
+        ProductModelAssembler assembler = new ProductModelAssembler();
+        assembler.setAdditionalSpecification(false);
+        Page<ProductModel> productModels = pageOfProducts.map(assembler::toModel);
+        return ResponseEntity.status(HttpStatus.OK).body(productModels);
     }
 
-/*
-    @RequestMapping(path = "/{section}/{category}/{subcategory}", method = RequestMethod.PUT)
-    public ResponseEntity<String> addProductToShoppingCart(
-            @RequestBody Product product) {
-        return addProd(product);
-    }
 
-    @RequestMapping(path = "/{section}/{category}/{subcategory}/search", method = RequestMethod.PUT)
-    public ResponseEntity<String> addProductToShoppingCartSearch(
-            @RequestBody Product product) {
-        return addProd(product);
-    }
+    /*
 
-    private ResponseEntity<String> addProd(Product product) {
-        Example<Product> example = Example.of(product);
-        if (productRepository.exists(example)) {
-            productRepository.findOne(example).ifPresent(
-                    realProduct -> shoppingCart.addProduct(realProduct, 1));
-            logger.debug("product added to shopping cart");
-            return ResponseEntity.status(HttpStatus.ACCEPTED).build();
-        }
-        return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(
-                "Nie można dodać do koszyka produktu, którego nie ma w bazie.");
-    }
+    Metody wykonywane na stronie danego produktu
 
-    @RequestMapping(path = "/{section}/{category}/{subcategory}/search", method = RequestMethod.DELETE)
-    public ResponseEntity<String> removeProductFromCart(
-            @RequestBody Product product) {
-        Example<Product> example = Example.of(product);
-        if (productRepository.exists(example)) {
-            productRepository.findOne(example).ifPresent(shoppingCart::removeProduct);
-            return ResponseEntity.status(HttpStatus.ACCEPTED).build();
-        }
-        return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(
-                "nie można usunąć produktu z koszyka którego nie ma w bazie");
-    }
-
- */
+     */
 
 
 
@@ -247,7 +252,9 @@ public class ProductController {
 
 
     /**
-     * Dodaj produkt do koszyka. TODO przeprojektować tak aby zamiast ścieżki i liczby
+     * Dodaj produkt do koszyka.
+     * <p></P>
+     * TODO przeprojektować tak aby zamiast ścieżki i liczby
      * obiektów do dodania do koszyka brał odpowiedni obiekt restowy i to z niego
      * wyłuskiwać informacje.
      *
@@ -307,6 +314,15 @@ public class ProductController {
 
 
 
+
+
+
+
+
+
+
+
+
 /*
     // ustawienia strony
             @RequestParam(name = "page", defaultValue = "0") @PositiveOrZero int page,
@@ -339,3 +355,58 @@ public class ProductController {
     }
      */
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+    @RequestMapping(path = "/{section}/{category}/{subcategory}", method = RequestMethod.PUT)
+    public ResponseEntity<String> addProductToShoppingCart(
+            @RequestBody Product product) {
+        return addProd(product);
+    }
+
+    @RequestMapping(path = "/{section}/{category}/{subcategory}/search", method = RequestMethod.PUT)
+    public ResponseEntity<String> addProductToShoppingCartSearch(
+            @RequestBody Product product) {
+        return addProd(product);
+    }
+
+    private ResponseEntity<String> addProd(Product product) {
+        Example<Product> example = Example.of(product);
+        if (productRepository.exists(example)) {
+            productRepository.findOne(example).ifPresent(
+                    realProduct -> shoppingCart.addProduct(realProduct, 1));
+            logger.debug("product added to shopping cart");
+            return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+        }
+        return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(
+                "Nie można dodać do koszyka produktu, którego nie ma w bazie.");
+    }
+
+    @RequestMapping(path = "/{section}/{category}/{subcategory}/search", method = RequestMethod.DELETE)
+    public ResponseEntity<String> removeProductFromCart(
+            @RequestBody Product product) {
+        Example<Product> example = Example.of(product);
+        if (productRepository.exists(example)) {
+            productRepository.findOne(example).ifPresent(shoppingCart::removeProduct);
+            return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+        }
+        return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(
+                "nie można usunąć produktu z koszyka którego nie ma w bazie");
+    }
+
+ */

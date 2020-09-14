@@ -1,7 +1,6 @@
 package com.malyszaryczlowiek.shop.feature;
 
 import com.malyszaryczlowiek.shop.products.Product;
-import org.hibernate.annotations.Fetch;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -12,7 +11,7 @@ import java.util.List;
 
 @Entity
 //@Inheritance(strategy = InheritanceType.JOINED) // to było używane przy dziediczeniu po encjach.
-@Table(name = "feature_table")
+@Table(name = "features")
 public class Feature {
 
     @Id
@@ -49,13 +48,13 @@ public class Feature {
     private String featureValue;
 
 
-    /**
+    /*
      * określa czy jest to podstawowa dana taka jak:
      * cena nazwa produktu brand, dostępność ilość w bazie danych.
-     */
+
     @Column(name = "basic_information", nullable = false)
     private boolean basicInformation;
-
+    */
 
     /**
      * lista produktów która posiada daną cechę.
@@ -71,12 +70,12 @@ public class Feature {
 
     public Feature() {}
 
-    public Feature(boolean basicInformation, //Category category,
+    public Feature(// boolean basicInformation, //Category category,
                    @NotEmpty @NotBlank String featureSearchingDescriptor,
                    @NotEmpty @NotBlank String featureName,
                    @NotEmpty @NotBlank String featureValue) {
         //this.category = category;
-        this.basicInformation = basicInformation;
+        // this.basicInformation = basicInformation;
         this.featureSearchingDescriptor = featureSearchingDescriptor;
         this.featureName = featureName;
         this.featureValue = featureValue;
@@ -90,6 +89,7 @@ public class Feature {
         this.id = id;
     }
 
+    /*
     public boolean isBasicInformation() {
         return basicInformation;
     }
@@ -97,6 +97,7 @@ public class Feature {
     public void setBasicInformation(boolean basicInformation) {
         this.basicInformation = basicInformation;
     }
+     */
 
     public String getFeatureSearchingDescriptor() {
         return featureSearchingDescriptor;
@@ -130,6 +131,15 @@ public class Feature {
         this.products.addAll(products);
     }
 }
+
+
+
+
+
+
+
+
+
 
 
 

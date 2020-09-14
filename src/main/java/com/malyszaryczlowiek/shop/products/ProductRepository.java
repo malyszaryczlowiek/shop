@@ -2,8 +2,8 @@ package com.malyszaryczlowiek.shop.products;
 
 
 import com.malyszaryczlowiek.shop.categories.Category;
-
 import com.malyszaryczlowiek.shop.feature.Feature;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -28,6 +28,23 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     @Query("SELECT p FROM Product p WHERE p.productCategory=:category")
     List<Product> findAllProductsInThisCategory(
             @Param(value = "category") Category category);
+
+
+    /**
+     * Find all products with this phrase
+     */
+    @Query("SELECT p FROM Product p WHERE p.productCategory IN (:categories) AND " +
+            "( p.brand LIKE :phrase OR p.productName LIKE :phrase )")
+    List<Product> findAllProductsInThisCategoryWithThisPhrase(
+            @Param(value = "categories") List<Category> categories,
+            @Param(value = "phrase") String phrase);
+
+    /**
+     * Find all products with this phrase
+     */
+    @Query("SELECT p FROM Product p WHERE  p.brand LIKE :phrase OR p.productName LIKE :phrase ")
+    List<Product> findAllProductsWithThisPhrase(@Param(value = "phrase") String phrase);
+
 
 
 

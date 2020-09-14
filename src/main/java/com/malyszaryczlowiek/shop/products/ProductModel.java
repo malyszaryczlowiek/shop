@@ -1,14 +1,13 @@
 package com.malyszaryczlowiek.shop.products;
 
-import com.malyszaryczlowiek.shop.feature.Feature;
 import com.malyszaryczlowiek.shop.shoppingCart.ShoppingCartController;
 
 import org.springframework.hateoas.RepresentationModel;
 
+import java.math.BigDecimal;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -28,6 +27,10 @@ public class ProductModel extends RepresentationModel<ProductModel> {
     private final String section;
     private final String category;
     private final String subcategory;
+    private final String brand;
+    private final String productName;
+    private final BigDecimal prize;
+    private final Integer amountInStock;
 
 
     /**
@@ -37,61 +40,29 @@ public class ProductModel extends RepresentationModel<ProductModel> {
 
 
     /**
-     * To jest zestaw obowiązkowych pól, które zawsze będą musiały
-     * się wyświetlić, gdy powbieramy informacje o produkcie i chemy
-     * wyświetlić podstawowe info np w wynikach wyszukiwania.
+     *
+     * @param product
+     * @param additionalSpecification to jest flaga, która oznacza, czy trzeba będzie wyświetlić
+     *       dodatkowe informacje o produkcie, będzie ona oznaczona jako true,
+     *       tylko w tedy gdy będziemy wchodzić na stronę produktu.
+     *       Jak wejdziemy na jego stronę to wywołamy na produkcie metodę
+     *       getSpecification(), która spowoduje zaciągnięcie dodatkowych
+     *       danych o specyfikacji z bazy danych. ale będzie się tak
+     *       działo tylko na stronie produktu dzięki czemu będziemy pobierali
+     *       informacje tylko o jednym produkcie i nie będziemy przez to
+     *       obciążali prawie wcale bazy danych.
      */
-    private String brand;
-    private String productName;
-    private String prize;
-    private String accessed;
-    private String amountInStock;
-
-
-    /**
-     * to jest flaga, która oznacza, czy trzeba będzie wyświetlić
-     * dodatkowe informacje o produkcie, będzie ona oznaczona jako true,
-     * tylko w tedy gdy będziemy wchodzić na stronę produktu.
-     * Jak wejdziemy na jego stronę to wywołamy na produkcie metodę
-     * getSpecification(), która spowoduje zaciągnięcie dodatkowych
-     * danych o specyfikacji z bazy danych. ale będzie się tak
-     * działo tylko na stronie produktu dzięki czemu będziemy pobierali
-     * informacje tylko o jednym produkcie i nie będziemy przez to
-     * obciążali prawie wcale bazy danych.
-     */
-    private final boolean additionalSpecification;
-
-
     public ProductModel(Product product, boolean additionalSpecification) {
-        this.additionalSpecification = additionalSpecification;
+        //this.additionalSpecification = additionalSpecification;
         this.section = product.getProductCategory().getSection();
         this.category = product.getProductCategory().getCategory();
         this.subcategory = product.getProductCategory().getSubcategory();
+        this.brand = product.getBrand();
+        this.productName = product.getProductName();
+        this.prize = product.getPrize();
+        this.amountInStock = product.getAmount();
 
-        // TODO to pilnie wymaga optymalizacji, bo streamowanie po kolei w celu znalezienia jednego
-        // ficzera jest nieoptymalne
-
-        product.getSpecification().stream()
-                .filter(feature -> feature.getFeatureSearchingDescriptor().equals("brand")) // b - brand
-                .findAny()
-                .ifPresent(feature ->  this.brand = feature.getFeatureValue());
-        product.getSpecification().stream()
-                .filter(feature -> feature.getFeatureSearchingDescriptor().equals("product_name")) // product Name
-                .findAny()
-                .ifPresent(feature ->  this.productName = feature.getFeatureValue());
-        product.getSpecification().stream()
-                .filter(feature -> feature.getFeatureSearchingDescriptor().equals("prize"))
-                .findAny()
-                .ifPresent(feature ->  this.prize = feature.getFeatureValue());
-        product.getSpecification().stream()
-                .filter(feature -> feature.getFeatureSearchingDescriptor().equals("accessed")) // a - accessed
-                .findAny()
-                .ifPresent(feature ->  this.accessed = feature.getFeatureValue());
-        product.getSpecification().stream()
-                .filter(feature -> feature.getFeatureSearchingDescriptor().equals("stock")) // sta - stock amount
-                .findAny()
-                .ifPresent(feature ->  this.amountInStock = feature.getFeatureValue());
-        setSpecification(product);
+        if (additionalSpecification) setSpecification(product);
         addLinks(product);
     }
 
@@ -101,16 +72,12 @@ public class ProductModel extends RepresentationModel<ProductModel> {
      * o specyfikacji bez
      */
     private void setSpecification(Product product) {
-        List<String> restrictedDescriptors = List.of("brand", "product_name", "prize",
-                "accessed", "stock");
-        product.getSpecification().forEach( feature -> {
-            // jeśli nie zawiera już wczytanego feaczera to doaj go do specyfikacji
-            // unikamy w ten sposób duplikowania w specyfikacji informacji o np. cenie itd.
-            if ( !restrictedDescriptors.contains(feature.getFeatureSearchingDescriptor()) )
-                specification.put(feature.getFeatureName(), feature.getFeatureValue());
-        });
+        product.getSpecification().forEach(
+                feature -> specification.put(feature.getFeatureName(), feature.getFeatureValue())
+        );
         // to jest dodatkowa specyfikacje, która będzie wyczytywana gdy wchodzimy
         // na stronę produktu
+        /*
         if (additionalSpecification) {
             // logger.debug("inserting subproduct information to product model");
             product.getComponents().forEach(subProduct -> {
@@ -121,10 +88,11 @@ public class ProductModel extends RepresentationModel<ProductModel> {
                 subProductName.ifPresent(feature -> {
                     String subCategoryAsKey = subProduct.getProductCategory().getSubcategory();
                     specification.put(subCategoryAsKey, feature.getFeatureValue());
-                    // todo to można/ trzeba zmodyfikować bo nie może być tak że podkategoria będzie kluczem
+                    // to można/ trzeba zmodyfikować bo nie może być tak że podkategoria będzie kluczem
                 });
             });
         }
+         */
     }
 
 
@@ -168,19 +136,11 @@ public class ProductModel extends RepresentationModel<ProductModel> {
         return brand;
     }
 
-    public String getPrize() {
+    public BigDecimal getPrize() {
         return prize;
     }
 
-    public String isAccessed() {
-        return accessed;
-    }
-
-    public String getAccessed() {
-        return accessed;
-    }
-
-    public String getAmountInStock() {
+    public Integer getAmountInStock() {
         return amountInStock;
     }
 
@@ -203,6 +163,41 @@ public class ProductModel extends RepresentationModel<ProductModel> {
 
 
 
+
+
+/*
+public ProductModel(Product product, boolean additionalSpecification) {
+        this.additionalSpecification = additionalSpecification;
+        this.section = product.getProductCategory().getSection();
+        this.category = product.getProductCategory().getCategory();
+        this.subcategory = product.getProductCategory().getSubcategory();
+
+        // ficzera jest nieoptymalne
+
+        product.getSpecification().stream()
+                .filter(feature -> feature.getFeatureSearchingDescriptor().equals("brand")) // b - brand
+                .findAny()
+                .ifPresent(feature ->  this.brand = feature.getFeatureValue());
+        product.getSpecification().stream()
+                .filter(feature -> feature.getFeatureSearchingDescriptor().equals("product_name")) // product Name
+                .findAny()
+                .ifPresent(feature ->  this.productName = feature.getFeatureValue());
+        product.getSpecification().stream()
+                .filter(feature -> feature.getFeatureSearchingDescriptor().equals("prize"))
+                .findAny()
+                .ifPresent(feature ->  this.prize = feature.getFeatureValue());
+        product.getSpecification().stream()
+                .filter(feature -> feature.getFeatureSearchingDescriptor().equals("accessed")) // a - accessed
+                .findAny()
+                .ifPresent(feature ->  this.accessed = feature.getFeatureValue());
+        product.getSpecification().stream()
+                .filter(feature -> feature.getFeatureSearchingDescriptor().equals("stock")) // sta - stock amount
+                .findAny()
+                .ifPresent(feature ->  this.amountInStock = feature.getFeatureValue());
+        setSpecification(product);
+        addLinks(product);
+    }
+ */
 
 
 

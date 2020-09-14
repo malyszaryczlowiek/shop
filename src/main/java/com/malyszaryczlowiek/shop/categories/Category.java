@@ -22,7 +22,7 @@ import java.util.List;
  * "podzespoly_komputerowe".
  */
 @Entity
-@Table(name = "category_table")
+@Table(name = "categories")
 public class Category implements Comparable<Category> {
 
     @Id

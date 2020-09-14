@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 
 @Entity
-@Table(name = "product_order_table")
+@Table(name = "product_orders")
 public class ProductOrder {
 
     @Id
@@ -63,6 +63,13 @@ public class ProductOrder {
 
 
     public BigDecimal getProductOrderPrize() {
+        BigDecimal productPrize = product.getPrize();
+        BigDecimal totalPrize = new BigDecimal("0.00"); // initialize total prize
+        for (int i = 0; i < numberOfOrderedProducts; i++) totalPrize = totalPrize.add(productPrize);
+        return totalPrize;
+    }
+
+    public BigDecimal getProductOrderPrizeOld() {
         // p oznacza tutaj prize
         String prize = product.getSpecification().stream()
                 .filter(feature -> feature.getFeatureSearchingDescriptor().equals("prize"))

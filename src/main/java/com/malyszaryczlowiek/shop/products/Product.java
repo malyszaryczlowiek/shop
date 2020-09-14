@@ -26,13 +26,13 @@ import java.util.List;
  * tylko w danej kategorii.
  *
  *
- * TODO można jeszcze dodać popularność
+ * TOD można jeszcze dodać popularność
  * można jescze dodać komentarze w formie @ManyToOne
  *
  */
 @Entity
 //@Inheritance(strategy = InheritanceType.JOINED) // to było używane przy dziediczeniu po encjach.
-@Table(name = "general_products_informations")
+@Table(name = "products")
 public class Product { //extends Feature
 
 
@@ -42,16 +42,15 @@ public class Product { //extends Feature
     private Long id;
 
 
-
     /**
      * cascade: dodaję tylko Persist tak aby przy dodawaniu nowego
      * produktu, który nie pasuje jeszcze do żadnej kategorii,
      * żeby nowa kategoria od razu była dodwana do DB.
      * <p>
-     * TODO sprawdzić jeszcze mergowanie i refreshowanie czy są bezpieczne.
+     * TOD sprawdzić jeszcze mergowanie i refreshowanie czy są bezpieczne.
      */
     @NotNull
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
+    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.REFRESH})
     private Category productCategory;
 
     // uwaga każdą encję która ma swój egzemplarz w bazie dancyh należy oznaczyć
@@ -73,40 +72,46 @@ public class Product { //extends Feature
     private BigDecimal popularity;
 
 
+    @NotNull
+    @Column(name = "brand", nullable = false)
+    private String brand;
 
-    /**
-     * Z tego co pamiętam to trzeba zawsze zainicjlalizować listę
-     *  TODO tutaj nie oznaczam caskadowości bo inaczej zaciągał bym wszystkie produkty
-     *  a lepiej jest je zaciągnąc tylko jak są nam niezbedne
-     */
-    @ManyToMany(fetch = FetchType.LAZY,
-            cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
-    // @JoinTable(to implement)
-    // @Fetch(to choose)
-    private List<Product> components = new ArrayList<>();
 
+    @NotNull
+    @Column(name = "product_name", nullable = false)
+    private String productName;
+
+
+    @NotNull
+    @Column(name = "prize", nullable = false)
+    private BigDecimal prize;
+
+
+    @NotNull
+    @Column(name = "amount", nullable = false)
+    private Integer amount;
 
 
     @ManyToMany(fetch = FetchType.EAGER,
-            cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
-    // @JoinTable(to implement)
-    // @Fetch(to choose)
+            cascade = {CascadeType.MERGE, CascadeType.REFRESH})
+    @JoinTable(name = "product_feature_join_table",
+            joinColumns = {@JoinColumn(name = "prod_id", referencedColumnName = "product_id")},
+            inverseJoinColumns = {@JoinColumn(name = "feat_id", referencedColumnName = "feature_id")})
+    @Fetch(FetchMode.SELECT)
     private final List<Feature> specification = new ArrayList<>();
-
 
 
     public Product() {}
 
-    public Product(@NotNull Category productCategory, @NotNull Feature productBrand,
-                   @NotNull Feature productName, @NotNull Feature prize,
-                   @NotNull Feature amountInStock, List<Product> components
-    ) {
+    public Product(@NotNull Category productCategory, @NotNull String productBrand,
+                   @NotNull String productName, @NotNull BigDecimal prize,
+                   @NotNull Integer amountInStock) {
         this.productCategory = productCategory;
-        this.specification.add(productBrand);
-        this.specification.add(productName);
-        this.specification.add(prize);
-        this.specification.add(amountInStock);
-        this.components = components;
+        this.brand = productBrand;
+        this.productName = productName;
+        this.prize = prize;
+        this.amount = amountInStock;
+        // this.components = components;
     }
 
     public Long getId() {
@@ -133,6 +138,39 @@ public class Product { //extends Feature
         this.popularity = popularity;
     }
 
+    public String getBrand() {
+        return brand;
+    }
+
+    public void setBrand(String brand) {
+        this.brand = brand;
+    }
+
+    public String getProductName() {
+        return productName;
+    }
+
+    public void setProductName(String productName) {
+        this.productName = productName;
+    }
+
+    public BigDecimal getPrize() {
+        return prize;
+    }
+
+    public void setPrize(BigDecimal prize) {
+        this.prize = prize;
+    }
+
+    public Integer getAmount() {
+        return amount;
+    }
+
+    public void setAmount(Integer amount) {
+        this.amount = amount;
+    }
+
+    /*
     public List<Product> getComponents() {
         return components;
     }
@@ -140,6 +178,7 @@ public class Product { //extends Feature
     public void setComponents(List<Product> components) {
         this.components = components;
     }
+     */
 
     public List<Feature> getSpecification() {
         return specification;
@@ -147,7 +186,7 @@ public class Product { //extends Feature
 
     public void setSpecification(List<Feature> specification) {
         this.specification.clear();
-        this.specification.addAll(specification);// = specification;
+        this.specification.addAll(specification);
     }
 }
 
@@ -163,7 +202,7 @@ public class Product { //extends Feature
 
 
 
-// TODO można jeszcze zdefiniowac popularność jako liczbę sprzedanych sztuk w ciągu ostatniego miesiąca
+// TOD można jeszcze zdefiniowac popularność jako liczbę sprzedanych sztuk w ciągu ostatniego miesiąca
 // można też dodać parametr oznaczający promocję / nowość / ostatnie sztuki gdy jest mniej niż 5
 
 
@@ -274,7 +313,17 @@ public class Product { //extends Feature
 
 
 
-
+/*
+     * Z tego co pamiętam to trzeba zawsze zainicjlalizować listę
+     *   tutaj nie oznaczam caskadowości bo inaczej zaciągał bym wszystkie produkty
+     *  a lepiej jest je zaciągnąc tylko jak są nam niezbedne
+     //
+    @ManyToMany(fetch = FetchType.LAZY,
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
+    @JoinTable(to implement)
+    @Fetch(to choose)
+    private List<Product> components = new ArrayList<>();
+    */
 
 
 
@@ -292,7 +341,7 @@ public class Product { //extends Feature
 
 
 /*
- * TODO zarówno description jak i specyfikacje można przenieść
+ *  zarówno description jak i specyfikacje można przenieść
  * do odpowienich klas i feczować tylko w przypadku gdy chcemy
  * otrzymać szczegółwowy opis produktu.
  *
