@@ -1,6 +1,6 @@
 package com.malyszaryczlowiek.shop.categories;
 
-import com.malyszaryczlowiek.shop.products.ProductController;
+import com.malyszaryczlowiek.shop.mainPageController.MainPageController;
 
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.RepresentationModel;
@@ -20,8 +20,8 @@ public class CategoryModel extends RepresentationModel<CategoryModel> {
             // te linki zwracają produkty ukryte w kategoriakch
             for(Category cat: listOfCategories) {
                 // linki do kategorii
-                Link link = linkTo(methodOn(ProductController.class)
-                        .getAllProductsInSubcategory(cat.getSectionDescriptor(),
+                Link link = linkTo(methodOn(MainPageController.class)
+                        .getAllProductsInSubcategoryWithPaging(cat.getSectionDescriptor(),
                                 cat.getCategoryDescriptor(), cat.getSubcategoryDescriptor()
                                 // deafoultowe parametry wyświetlania strony
                                 ,0, 20, "d", "popularity"
@@ -32,7 +32,7 @@ public class CategoryModel extends RepresentationModel<CategoryModel> {
             }
         } else {
             for(Category cat: listOfCategories) {
-                Link link = linkTo(methodOn(ProductController.class)
+                Link link = linkTo(methodOn(MainPageController.class)
                         .getAllSubcategoriesInCategory(cat.getSectionDescriptor(), cat.getCategoryDescriptor()))
                         .withRel(cat.getCategoryDescriptor())
                         .withName(cat.getCategory());

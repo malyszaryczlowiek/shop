@@ -9,7 +9,6 @@ import com.malyszaryczlowiek.shop.order.OrderRepository;
 import com.malyszaryczlowiek.shop.productOrder.ProductOrder;
 import com.malyszaryczlowiek.shop.productOrder.ProductOrderRepository;
 import com.malyszaryczlowiek.shop.products.Product;
-import com.malyszaryczlowiek.shop.products.ProductModel;
 import com.malyszaryczlowiek.shop.products.ProductRepository;
 
 import org.slf4j.Logger;
@@ -21,8 +20,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.ContextLoader;
 import org.springframework.web.context.WebApplicationContext;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.validation.constraints.PositiveOrZero;
 import java.util.ArrayList;
@@ -81,19 +82,18 @@ public class ShoppingCartController {
      * metoda wywołaywana przy dodaniu produktu do koszyka po wyszukaniu go w wyszukiwarce,
      * albo bezpośrednio w koszyku
      */
-    @RequestMapping(method = RequestMethod.PUT)
+    @RequestMapping(path = "/{id}", method = RequestMethod.PUT)
     public ResponseEntity<ShoppingCartModel> addProductToShoppingCart(
-            @Valid @RequestBody Product product,
-            @RequestParam(name = "page", defaultValue = "0", required = false) @PositiveOrZero int page,
-            @RequestParam(name = "size", defaultValue = "10", required = false) @PositiveOrZero int size) {
+            @PathVariable(name = "id") @PositiveOrZero Long id) {
+        //HttpServletResponse response = ContextLoader.getCurrentWebApplicationContext().getBean(HttpServletResponse.class);
 
-        Example<Product> example = Example.of(product);
-        if (productRepository.exists(example)) {
-            Optional<Product> optionalProduct = productRepository.findOne(example);
+        //Example<Product> example = Example.of(product);
+        if (productRepository.existsById(id)) {
+            Optional<Product> optionalProduct = productRepository.findById(id);
             if (optionalProduct.isPresent()) {
-                shoppingCart.addProduct(optionalProduct.get(), 1);
+                shoppingCart.addProduct(optionalProduct.get().getId(), 1);
                 logger.debug("product added to shopping cart");
-                return returnContentOfShoppingCart(page, size);
+                return returnContentOfShoppingCart(0, 10);
             }
         }
         logger.debug("There is no such product in database.");
@@ -108,17 +108,15 @@ public class ShoppingCartController {
      */
     @RequestMapping(method = RequestMethod.DELETE)
     public ResponseEntity<ShoppingCartModel> removeProductFromShoppingCart(
-            @Valid @RequestBody Product product,
-            @RequestParam(name = "page", defaultValue = "0", required = false) @PositiveOrZero int page,
-            @RequestParam(name = "size", defaultValue = "10", required = false) @PositiveOrZero int size) {
+            @Valid @RequestBody Product product) {
 
         Example<Product> example = Example.of(product);
         if (productRepository.exists(example)) {
             Optional<Product> optionalProduct = productRepository.findOne(example);
             if (optionalProduct.isPresent()) {
-                shoppingCart.removeProduct(optionalProduct.get());
+                shoppingCart.removeProduct(optionalProduct.get().getId());
                 logger.debug("product removed to shopping cart");
-                return returnContentOfShoppingCart(page, size);
+                return returnContentOfShoppingCart(0, 10);
             }
         }
         logger.debug("Cannot remove product from shopping cart because it not exists in database.");
@@ -142,6 +140,7 @@ public class ShoppingCartController {
      * @return zwraca wykonane zamówienie.
      */
     //@Secured("ROLE_CLIENT")
+    /*
     @RequestMapping(value = "/payment", method = RequestMethod.GET)
     ResponseEntity<OrderModel> goToPayment(Authentication authentication) {
         String email = authentication.getName();
@@ -159,6 +158,8 @@ public class ShoppingCartController {
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
+     */
+
 }
 
 

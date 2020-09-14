@@ -61,7 +61,7 @@ public class Order {
      * kluczy obu tabel.
      */
     @OneToMany(fetch = FetchType.EAGER,
-            cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
+            cascade = {CascadeType.MERGE, CascadeType.REFRESH})
     @JoinColumn(name = "order_id", referencedColumnName = "order_id")
     @Fetch(FetchMode.SELECT)
     @BatchSize(size = 20)

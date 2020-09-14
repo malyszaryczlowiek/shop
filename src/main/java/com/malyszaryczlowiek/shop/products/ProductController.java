@@ -1,26 +1,18 @@
 package com.malyszaryczlowiek.shop.products;
 
-import com.malyszaryczlowiek.shop.categories.Category;
-import com.malyszaryczlowiek.shop.categories.CategoryModel;
-import com.malyszaryczlowiek.shop.categories.CategoryModelAssembler;
-import com.malyszaryczlowiek.shop.categories.CategoryRepository;
-import com.malyszaryczlowiek.shop.controllerUtil.ControllerUtil;
 import com.malyszaryczlowiek.shop.shoppingCart.ShoppingCart;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
-import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.WebApplicationContext;
 
 import javax.validation.constraints.Positive;
-import javax.validation.constraints.PositiveOrZero;
-import java.util.Iterator;
-import java.util.List;
+
 
 /**
  * sprawdzić czy nie będzie trzeba oznaczyć go jako
@@ -33,205 +25,17 @@ public class ProductController {
 
     private final Logger logger = LoggerFactory.getLogger(ProductController.class);
 
-    private final ControllerUtil controllerUtil;
     private final ProductRepository productRepository;
-    private final CategoryRepository categoryRepository;
     private final ShoppingCart shoppingCart;
 
 
     @Autowired
     public ProductController(
-            ControllerUtil controllerUtil,
             ProductRepository productRepository,
-            CategoryRepository categoryRepository,
             ShoppingCart shoppingCart) {
-        this.controllerUtil = controllerUtil;
         this.productRepository = productRepository;
-        this.categoryRepository = categoryRepository;
         this.shoppingCart = shoppingCart;
     }
-
-
-    /**
-     * Wyświetl listę produktów posortowancyh wstępnie po popularności
-     *
-     */
-    @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity<Page<ProductModel>> getProductsByPhrase(
-            @RequestParam(name = "phrase") String phrase,
-            @RequestParam(name = "page", defaultValue = "0", required = false) @PositiveOrZero int page,
-            @RequestParam(name = "size", defaultValue = "20", required = false) @PositiveOrZero int size,
-            @RequestParam(name = "sort", defaultValue = "d", required = false) String sorting,
-            @RequestParam(name = "sortBy", defaultValue = "popularity", required = false) String sortBy) {
-        if (phrase == null || phrase.isBlank() || phrase.isEmpty())
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        Pageable pageable = controllerUtil.setPaging(page, size, sorting, sortBy);
-        List<Product> listOfProducts = productRepository.findAllProductsWithThisPhrase(phrase);
-        if (listOfProducts.isEmpty())
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-        Page<Product> pageOfProducts = new PageImpl<>(listOfProducts, pageable, listOfProducts.size());
-        ProductModelAssembler assembler = new ProductModelAssembler();
-        assembler.setAdditionalSpecification(false);
-        Page<ProductModel> finalPage = pageOfProducts.map(assembler::toModel);
-        return ResponseEntity.status(HttpStatus.OK).body(finalPage);
-    }
-
-
-    /**
-     * to jest metoda z null string jako kategorią.
-     */
-    @RequestMapping(path = "/{section}", method = RequestMethod.GET)
-    public ResponseEntity<CategoryModel> getAllCategoriesInSection(
-            @PathVariable(name = "section") String section) {
-        List<Category> categories = categoryRepository.findAllCategoriesInGivenSection(section);
-        return getListOfCategories(categories, false);
-    }
-
-
-
-    /**
-     * to jest metoda z empty string jako kategorią.
-     */
-    @RequestMapping(path = "/{section}/{category}", method = RequestMethod.GET)
-    public ResponseEntity<CategoryModel> getAllSubcategoriesInCategory(
-            @PathVariable(name = "section") String section,
-            @PathVariable(name = "category") String category) {
-        List<Category> categories = categoryRepository.findAllSubcategoriesInGivenSectionAndCategory(section, category);
-        return getListOfCategories(categories, true);
-    }
-
-
-
-    private ResponseEntity<CategoryModel> getListOfCategories(List<Category> categories, boolean showSubcategories) {
-        if (categories.isEmpty()) {
-            logger.debug("jest empty - nie ma takiej sekcji");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-        CategoryModelAssembler assembler = new CategoryModelAssembler();
-        assembler.setSubcategoriesLinksFlag(showSubcategories);
-        return ResponseEntity.status(HttpStatus.OK).body(assembler.toModel(categories));
-    }
-
-
-
-    /**
-     * Defaultowa metoda która wyłuskuje wszystkie produkty w danej podkategorii,
-     * bez jakiegokolwiek sortowania i  ustawień pagingu.
-     */
-    @RequestMapping(path = "/{section}/{category}/{subcategory}", method = RequestMethod.GET)
-    public ResponseEntity<Page<ProductModel>> getAllProductsInSubcategory(
-            @PathVariable(name = "section") String section,
-            @PathVariable(name = "category") String category,
-            @PathVariable(name = "subcategory") String subcategory,
-            // parametry wyświetlania strony
-            @RequestParam(name = "page", defaultValue = "0", required = false) @PositiveOrZero int page,
-            @RequestParam(name = "size", defaultValue = "20", required = false) @PositiveOrZero int size,
-            @RequestParam(name = "sort", defaultValue = "d", required = false) String sorting,
-            @RequestParam(name = "sortBy", defaultValue = "popularity", required = false) String sortBy) {
-
-        Pageable pageable = controllerUtil.setPaging(page, size, sorting, sortBy);
-        List<Category> categories = categoryRepository.findSubcategory(section, category, subcategory);
-        return getProducts(categories, null, pageable);
-    }
-
-
-    /**
-     * Wyszukiwanie produktów po ich paramtrach. Parametry wyszukiwania zawarte są w
-     * obiekcie {@link SearchingCriteria}.
-     */
-    @RequestMapping(path = "/{section}/{category}/{subcategory}/search", method = RequestMethod.POST)
-    public ResponseEntity<Page<ProductModel>> getProductsFromSearchingCriteria(
-            @RequestBody SearchingCriteria searchingCriteria, // kryteria wyszukiwawcze
-            @PathVariable(name = "section") String section,
-            @PathVariable(name = "category") String category,
-            @PathVariable(name = "subcategory") String subcategory,
-            // parametry wyświetlania strony
-            @RequestParam(name = "page", defaultValue = "0", required = false) @PositiveOrZero int page,
-            @RequestParam(name = "size", defaultValue = "20", required = false) @PositiveOrZero int size,
-            @RequestParam(name = "sort", defaultValue = "d", required = false) String sorting,
-            @RequestParam(name = "sortBy", defaultValue = "popularity", required = false) String sortBy) {
-
-        Pageable pageable = controllerUtil.setPaging(page, size, sorting, sortBy);
-        List<Category> categories = categoryRepository.findSubcategory(section, category, subcategory);
-        return getProducts(categories, searchingCriteria, pageable);
-    }
-
-
-
-    /**
-     *
-     *
-     * ta metoda bardziej obciąża pamięć bo wczytuje dużo danych, które następnie odfiltrowuje,
-     * jest natomiast szybsza pod kątem wczytania danych z DB?
-     */
-    private ResponseEntity<Page<ProductModel>> getProducts(
-            List<Category> categories, SearchingCriteria searchingCriteria, Pageable pageable) {
-        if (categories.isEmpty()) {
-            logger.debug("jest empty - nie ma takiej sekcji");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-        /*
-        String phrase;
-        List<Product> listOfProducts;
-        if (searchingCriteria.getSearchingParameters().containsKey("phrase") &&
-                searchingCriteria.getSearchingParameters().get("phrase").size() == 1) {
-            phrase = searchingCriteria.getSearchingParameters().get("phrase").get(0);
-            listOfProducts =
-                    productRepository.findAllProductsInThisCategoryWithThisPhrase(categories, phrase);
-            searchingCriteria.getSearchingParameters().remove("phrase"); // trzeba usunąć
-        }
-        else
-         */
-        List<Product> listOfProducts = productRepository.findAllProductsInTheseCategories(categories);
-        if (listOfProducts.size() == 0) {
-            logger.debug("nie ma produktów w tej kategorii. ");
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-        }
-        // jeśli istnieją jakieś niezerowe zadane kryteria wyszukiwania to
-        // należy wg. nich odfiltrować wyniki
-        // musi być większe od jeden
-        if ( searchingCriteria.getSearchingParameters().size() > 0) {
-            logger.debug("SearchingCriteria nie jest null i ma mapę większa od 0.");
-            searchingCriteria.getSearchingParameters().forEach( (descriptorToFind, listOfValues) -> {
-                Iterator<Product> productIterator = listOfProducts.iterator();
-                while (productIterator.hasNext()) {
-                    boolean doesProductFulfilSearchingCriteria = productIterator.next()
-                            .getSpecification()
-                            .stream()
-                            .anyMatch(
-                            // pierwszy warunek sprawdza czy feature ma ten descryptor
-                            feature -> feature.getFeatureSearchingDescriptor().equals(descriptorToFind)
-                                    // jeśli go ma to sprawdza czy wartość tego descryptora
-                                    // jest w szukanych wartościach.
-                                    && listOfValues.contains(feature.getFeatureValue())
-                            // jeśli to zwróci true to znaczy, że produkt zawiera feature ze wskazaną wartością
-                            // i nie należy go usówać
-                    );
-                    if ( !doesProductFulfilSearchingCriteria ) productIterator.remove();
-                }
-            });
-        }
-        if (listOfProducts.size() == 0) {
-            logger.debug("po przefiltrowaniu produktów nie znaleziono żadnego pasującego wyniku.");
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-        }
-        logger.debug("ilość produktów po odfiltrowaniu niepasujących wynosi: " + listOfProducts.size());
-        Page<Product> pageOfProducts = new PageImpl<>(listOfProducts, pageable,listOfProducts.size());
-        ProductModelAssembler assembler = new ProductModelAssembler();
-        assembler.setAdditionalSpecification(false);
-        Page<ProductModel> productModels = pageOfProducts.map(assembler::toModel);
-        return ResponseEntity.status(HttpStatus.OK).body(productModels);
-    }
-
-
-    /*
-
-    Metody wykonywane na stronie danego produktu
-
-     */
-
-
-
     /**
      * Metoda zwraca produkt
      *
@@ -266,8 +70,7 @@ public class ProductController {
     public ResponseEntity<String> putProductToShoppingCart(
             @Positive @RequestBody Integer amountOfOrderedProducts, @PathVariable Long id) {
         if (productRepository.existsById(id)) {
-            Product product = productRepository.getOne(id);
-            shoppingCart.addProduct(product,amountOfOrderedProducts);
+            shoppingCart.addProduct(id, amountOfOrderedProducts);
             return ResponseEntity.status(HttpStatus.ACCEPTED)
                     .body("Product in number of " + amountOfOrderedProducts + " added to shopping cart.");
         }
@@ -283,18 +86,21 @@ public class ProductController {
      * @return Powiadomienie
      */
     @RequestMapping(path = "/{id}", method = RequestMethod.DELETE)
-    public ResponseEntity<String> deleteProductFromCart(@PathVariable(name = "id") Long id) {
+    public ResponseEntity<String> deleteProductFromCart(@PathVariable Long id) {
         if (productRepository.existsById(id)) {
-            Product productToDelete = productRepository.getOne(id);
-            if (shoppingCart.isProductPutInShoppingCart(productToDelete)) {
-                if (shoppingCart.removeProduct(productToDelete))
+            //Product productToDelete = productRepository.getOne(id);
+            logger.debug("rozmiar koszyka przed usunięciem produktu wynosi: " + shoppingCart.getAllProductsInShoppingCart().size());
+            if (shoppingCart.isProductPutInShoppingCart(id)) {
+                logger.debug("Produkt znajduje się w koszyku.");
+                if (shoppingCart.removeProduct(id)) {
+                    logger.debug("produkt usunięto z koszyka.");
                     return ResponseEntity.status(HttpStatus.OK)
                             .body("Product successfully removed form shopping Cart.");
-                else
-                    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                            .body("Bad Request. There is no such product to remove from shopping cart");
+                }
+                else return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body("Bad Request. There is no such product to remove from shopping cart");
             }
-            else
+            logger.debug("Nie ma takiego produktu w koszyku.");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body("Bad Request. There is no current product in shopping cart");
         }

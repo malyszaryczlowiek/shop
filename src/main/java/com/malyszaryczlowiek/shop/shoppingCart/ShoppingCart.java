@@ -1,11 +1,11 @@
 package com.malyszaryczlowiek.shop.shoppingCart;
 
 import com.malyszaryczlowiek.shop.products.Product;
+import com.malyszaryczlowiek.shop.products.ProductRepository;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -18,8 +18,7 @@ import java.util.*;
  * nowy obiekt tego typu.
  */
 @Component
-@Scope(scopeName = WebApplicationContext.SCOPE_SESSION,
-        proxyMode = ScopedProxyMode.TARGET_CLASS)
+@Scope(scopeName = WebApplicationContext.SCOPE_SESSION)//, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class ShoppingCart {
 
 
@@ -31,27 +30,42 @@ public class ShoppingCart {
      *
      * LinkHashMapa powala nam mieć już produkty ułożone w kolejności dodawania do koszyka.
      */
-    private final Map<Product, Integer> productsInCart = new LinkedHashMap<>();
+    private final Map<Long, Integer> productsInCart = new LinkedHashMap<>();
+    private final ProductRepository productRepository;
 
-
-    public void addProduct(Product product, Integer number) {
-        if (productsInCart.containsKey(product)) {
-            Integer total = productsInCart.get(product) + number;
-            productsInCart.replace(product, total);
-        }
-        else productsInCart.put(product, number);
-        logger.debug("product added to shopping cart");
+    public ShoppingCart(ProductRepository productRepository) {
+        this.productRepository = productRepository;
     }
 
-    public boolean removeProduct(Product product) {
-        return productsInCart.remove(product) != null;
+
+    public void addProduct(Long productId, Integer number) {
+        logger.debug("rozmiar koszyka przed dodaniem wynosi: " + productsInCart.size());
+        if (productsInCart.containsKey(productId)) {
+            Integer total = productsInCart.get(productId) + number;
+            productsInCart.replace(productId, total);
+            logger.debug("W koszyku zmieniono ilość produktu na " + total);
+        }
+        else productsInCart.put(productId, number);
+        logger.debug("rozmiar koszyka po dodaniu wynosi: " + productsInCart.size());
+    }
+
+    public boolean removeProduct(Long productId) {
+        return productsInCart.remove(productId) != null;
     }
 
     public Map<Product, Integer> getAllProductsInShoppingCart() {
-        return this.productsInCart;
+        List<Product> productList = productRepository.findAllById(productsInCart.keySet());
+        Map<Product, Integer> resultMap = new LinkedHashMap<>(productsInCart.size());
+        productsInCart.forEach(
+                (productId, amount) -> productList.stream()
+                        .filter(product -> product.getId().equals(productId))
+                        .findFirst()
+                        .ifPresent(foundProduct -> resultMap.put(foundProduct, amount))
+        );
+        return resultMap;
     }
 
-    public boolean isProductPutInShoppingCart(Product productToDelete) {
+    public boolean isProductPutInShoppingCart(Long productToDelete) {
         return productsInCart.containsKey(productToDelete);
     }
 }

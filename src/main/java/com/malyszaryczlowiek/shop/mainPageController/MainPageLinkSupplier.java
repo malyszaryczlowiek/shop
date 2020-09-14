@@ -36,8 +36,10 @@ public class MainPageLinkSupplier {
                 .withRel("shopping_cart"));
 
         // link do moich zamówień
-        listOfLinks.add(linkTo(methodOn(OrderController.class))
+        /*
+        listOfLinks.add(linkTo(methodOn(OrderController.class).getMyOrders(0,10,"d", "orderDate",null,null,))
                 .withRel("shopping_cart"));
+         */
     }
 
 

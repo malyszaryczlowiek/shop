@@ -1,5 +1,6 @@
 package com.malyszaryczlowiek.shop.products;
 
+import com.malyszaryczlowiek.shop.mainPageController.MainPageController;
 import com.malyszaryczlowiek.shop.shoppingCart.ShoppingCartController;
 
 import org.springframework.hateoas.RepresentationModel;
@@ -53,7 +54,6 @@ public class ProductModel extends RepresentationModel<ProductModel> {
      *       obciążali prawie wcale bazy danych.
      */
     public ProductModel(Product product, boolean additionalSpecification) {
-        //this.additionalSpecification = additionalSpecification;
         this.section = product.getProductCategory().getSection();
         this.category = product.getProductCategory().getCategory();
         this.subcategory = product.getProductCategory().getSubcategory();
@@ -114,16 +114,18 @@ public class ProductModel extends RepresentationModel<ProductModel> {
                         .withSelfRel(),
                 // link do dodania produktu do koszyka ze strony produktu
                 linkTo(methodOn(ShoppingCartController.class)
-                        .addProductToShoppingCart(entity, 0,10))
-                        .withRel("shopping_cart").withName("add_product"),
+                        .addProductToShoppingCart(entity.getId()))
+                        .withRel("put_to_shopping_cart").withType("PUT"),
                 // link to usunięcia produktu jak zostanie dodany do koszyka ze strony produktu
                 linkTo(methodOn(ShoppingCartController.class)
-                        .removeProductFromShoppingCart(entity,0,10))
-                        .withRel("shopping_cart").withName("remove_product"),
+                        .removeProductFromShoppingCart(entity))
+                        .withRel("delete_from_shopping_cart").withType("DELETE"),
                 // link do kategorii w której znajduje sie produkt
-                linkTo(methodOn(ProductController.class).getAllProductsInSubcategory(
-                        section, category, subcategory, 0, 20, "d", "popularity"))
-                        .withRel("product_category")
+                linkTo(methodOn(MainPageController.class).getAllProductsInSubcategoryWithPaging(
+                        entity.getProductCategory().getSectionDescriptor(),
+                        entity.getProductCategory().getCategoryDescriptor(),
+                        entity.getProductCategory().getSubcategoryDescriptor(),
+                        0, 20, "d", "popularity")).withRel("products_in_category")
         ));
     }
 

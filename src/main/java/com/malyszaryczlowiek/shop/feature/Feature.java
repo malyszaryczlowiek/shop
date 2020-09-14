@@ -62,7 +62,7 @@ public class Feature {
      * w którym w SQL'a będziemy wstrzykiwali cechę którą będzie musiał znaleźć
      */
     @ManyToMany(mappedBy = "specification",
-            cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
+            cascade = {CascadeType.MERGE, CascadeType.REFRESH})
     // @JoinTable(to implement)
     // @Fetch(to choose)
     private final List<Product> products = new ArrayList<>();

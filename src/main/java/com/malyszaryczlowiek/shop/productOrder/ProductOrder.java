@@ -18,7 +18,7 @@ public class ProductOrder {
     private Long id;
 
 
-    @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST})
+    @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE})
     @NotNull
     private Product product;
 

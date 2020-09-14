@@ -188,6 +188,34 @@ public class Product { //extends Feature
         this.specification.clear();
         this.specification.addAll(specification);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Product product = (Product) o;
+
+        if (!id.equals(product.id)) return false;
+        if (!productCategory.equals(product.productCategory)) return false;
+        if (popularity != null ? !popularity.equals(product.popularity) : product.popularity != null) return false;
+        if (!brand.equals(product.brand)) return false;
+        if (!productName.equals(product.productName)) return false;
+        if (!prize.equals(product.prize)) return false;
+        return amount.equals(product.amount);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id.hashCode();
+        result = 31 * result + productCategory.hashCode();
+        result = 31 * result + (popularity != null ? popularity.hashCode() : 0);
+        result = 31 * result + brand.hashCode();
+        result = 31 * result + productName.hashCode();
+        result = 31 * result + prize.hashCode();
+        result = 31 * result + amount.hashCode();
+        return result;
+    }
 }
 
 
