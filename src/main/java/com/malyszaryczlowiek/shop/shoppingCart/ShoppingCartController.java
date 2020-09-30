@@ -62,10 +62,6 @@ public class ShoppingCartController {
 
     /**
      *
-     *
-     * @param page
-     * @param size
-     * @return
      */
     @RequestMapping(method = RequestMethod.GET)
     public ResponseEntity<ShoppingCartModel> getShoppingCart(
@@ -92,7 +88,7 @@ public class ShoppingCartController {
         if (productRepository.existsById(productIdOrder.getId())) {
             Optional<Product> optionalProduct = productRepository.findById(productIdOrder.getId());
             if (optionalProduct.isPresent()) {
-                shoppingCart.addProduct(optionalProduct.get().getId(), productIdOrder.getAmount());
+                shoppingCart.addProduct(productIdOrder);
                 logger.debug("product added to shopping cart");
                 return returnContentOfShoppingCart(0, 10);
             }

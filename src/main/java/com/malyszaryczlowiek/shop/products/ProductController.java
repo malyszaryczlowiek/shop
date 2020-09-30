@@ -70,10 +70,9 @@ public class ProductController {
     public ResponseEntity<String> putProductToShoppingCart(
             @Valid @RequestBody ProductIdOrder productIdOrder, @PathVariable Long id) {
         if (!id.equals(productIdOrder.getId()))
-            ResponseEntity.status(HttpStatus.CONFLICT).build();
-
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
         if (productRepository.existsById(id)) {
-            shoppingCart.addProduct(productIdOrder.getId(), productIdOrder.getAmount());
+            shoppingCart.addProduct(productIdOrder);
             return ResponseEntity.status(HttpStatus.ACCEPTED)
                     .body("Product in number of " + productIdOrder.getAmount() + " added to shopping cart.");
         }
