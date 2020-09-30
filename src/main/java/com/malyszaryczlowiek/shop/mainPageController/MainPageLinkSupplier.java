@@ -1,9 +1,9 @@
 package com.malyszaryczlowiek.shop.mainPageController;
 
 import com.malyszaryczlowiek.shop.client.ClientAccountController;
-import com.malyszaryczlowiek.shop.order.OrderController;
-
+import com.malyszaryczlowiek.shop.client.CreateAccountController;
 import com.malyszaryczlowiek.shop.shoppingCart.ShoppingCartController;
+
 import org.springframework.hateoas.Link;
 
 import java.util.ArrayList;
@@ -17,14 +17,9 @@ public class MainPageLinkSupplier {
 
     private final List<Link> listOfLinks = new ArrayList<>();
 
-    /**
-     * TODO sprawdzić czy tak utworzona lista nie będzie dodawała
-     * ponownie już dodanych linków przy każdym autowiringu.
-     *
-     */
     public MainPageLinkSupplier() {
         // link do głównej strony
-        listOfLinks.add(linkTo(methodOn(MainPageController.class).welcomePage())
+        listOfLinks.add(linkTo(MainPageController.class)
                 .withRel("main_page"));
 
         // link do strony użytkownika
@@ -32,14 +27,12 @@ public class MainPageLinkSupplier {
                 .withRel("client_side"));
 
         // link do koszyka
-        listOfLinks.add(linkTo(methodOn(ShoppingCartController.class).getShoppingCart(0,10))
+        listOfLinks.add(linkTo(ShoppingCartController.class)
                 .withRel("shopping_cart"));
 
-        // link do moich zamówień
-        /*
-        listOfLinks.add(linkTo(methodOn(OrderController.class).getMyOrders(0,10,"d", "orderDate",null,null,))
-                .withRel("shopping_cart"));
-         */
+        //link do tworzenia konta
+        listOfLinks.add(linkTo(methodOn(CreateAccountController.class).createClient())
+                .withRel("create_client_account"));
     }
 
 

@@ -22,19 +22,55 @@ public class ClientCreator {
         this.pass = pass;
     }
 
-    public String getEmail() {        return email;    }
+    public String getEmail() {
+        return email;
+    }
 
-    public void setEmail(@Email String email) {        this.email = email;    }
+    public void setEmail(@Email String email) {
+        this.email = email;
+    }
 
-    public Integer getPhone() {        return phone;    }
+    public Integer getPhone() {
+        return phone;
+    }
 
-    public void setPhone(@Digits(integer = 9, fraction = 0) Integer phone) {        this.phone = phone;    }
+    public void setPhone(@Digits(integer = 9, fraction = 0) Integer phone) {
+        this.phone = phone;
+    }
 
-    public String getPass() {        return pass;    }
+    public String getPass() {
+        return pass;
+    }
 
-    public void setPass(String pass) {        this.pass = pass;    }
+    public void setPass(String pass) {
+        this.pass = pass;
+    }
+
+}
+/*
 
     public Client getClient() {
         return new Client(email,phone,new BCryptPasswordEncoder().encode(pass));
     }
-}
+ */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

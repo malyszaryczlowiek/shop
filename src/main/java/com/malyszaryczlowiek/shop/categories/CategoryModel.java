@@ -2,32 +2,85 @@ package com.malyszaryczlowiek.shop.categories;
 
 import com.malyszaryczlowiek.shop.mainPageController.MainPageController;
 
-import org.springframework.hateoas.Link;
 import org.springframework.hateoas.RepresentationModel;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 public class CategoryModel extends RepresentationModel<CategoryModel> {
 
-    public CategoryModel(List<Category> listOfCategories, boolean linksForSubcategories) {
-        List<Link> links = new ArrayList<>(listOfCategories.size());
-        if (linksForSubcategories) { // tutaj generuję tylko linki do podkategorii.
-            // te linki zwracają produkty ukryte w kategoriakch
-            for(Category cat: listOfCategories) {
-                // linki do kategorii
-                Link link = linkTo(methodOn(MainPageController.class)
-                        .getAllProductsInSubcategoryWithPaging(cat.getSectionDescriptor(),
-                                cat.getCategoryDescriptor(), cat.getSubcategoryDescriptor()
+    private final String section;
+    private final String category;
+    private final String subcategory;
+
+
+    public CategoryModel(Category category) {
+        this.section = category.getSection();
+        this.category = category.getCategory();
+        this.subcategory = category.getSubcategory();
+
+        this.add(
+                // link do kategorii ale bez request parameters
+                linkTo(MainPageController.class)
+                        .slash(category.getSectionDescriptor())
+                        .slash(category.getCategoryDescriptor())
+                        .slash(category.getSubcategoryDescriptor())
+                        .withSelfRel()
+                        .withType("GET")
+        );
+    }
+
+    public String getSection() {
+        return section;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public String getSubcategory() {
+        return subcategory;
+    }
+}
+
+
+
+
+
+
+/*
+                category.getSectionDescriptor(),
+                        category.getCategoryDescriptor(),
+                        category.getSubcategoryDescriptor()
+,
+                // linki do kategorii z request parameters
+                linkTo(methodOn(MainPageController.class)
+                        .getAllProductsInSubcategoryWithPaging(
+                                category.getSectionDescriptor(),
+                                category.getCategoryDescriptor(),
+                                category.getSubcategoryDescriptor()
                                 // deafoultowe parametry wyświetlania strony
                                 ,0, 20, "d", "popularity"
                         ))
-                        .withRel(cat.getCategoryDescriptor())
-                        .withName(cat.getCategory());
+                        .withRel(category.getCategoryDescriptor())
+                        .withType("GET")
+                        //.withName(category.getCategory())
+ */
+
+
+
+
+
+
+
+
+
+
+/*
+List<Link> links = new ArrayList<>(listOfCategories.size());
+        if (linksForSubcategories) { // tutaj generuję tylko linki do podkategorii.
+            // te linki zwracają produkty ukryte w kategoriakch
+            for(Category cat: listOfCategories) {
+
                 links.add(link);
             }
         } else {
@@ -43,13 +96,7 @@ public class CategoryModel extends RepresentationModel<CategoryModel> {
         }
         // tuaj dodaje linki
         this.add(links);
-    }
-}
-
-
-
-
-
+ */
 
 
 
@@ -73,33 +120,4 @@ model.add(// link do kategorii
                 linkTo(methodOn(ProductController.class)
                         .getAllSubcategoriesInCategory(entity.getSectionDescriptor(), entity.getCategoryDescriptor()))
                         .withSelfRel().withRel(entity.getCategoryDescriptor()).withRel("sldgfj"));
- */
-
-/*
-
-// old implementation
-w tej implementacji brałem pojedyńczą kategrie a nie listę
-private final String sectionName;
-    private final String categoryName;
-    private final String subcategoryName;
-
-
-    public CategoryModel(Category category) {
-        this.sectionName = category.getSection();
-        this.categoryName = category.getCategory();
-        this.subcategoryName = category.getSubcategory();
-    }
-
-    public String getSectionName() {
-        return sectionName;
-    }
-
-    public String getCategoryName() {
-        return categoryName;
-    }
-
-    public String getSubcategoryName() {
-        return subcategoryName;
-    }
-
  */

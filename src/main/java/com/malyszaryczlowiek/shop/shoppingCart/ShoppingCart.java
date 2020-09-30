@@ -6,6 +6,7 @@ import com.malyszaryczlowiek.shop.products.ProductRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -18,7 +19,7 @@ import java.util.*;
  * nowy obiekt tego typu.
  */
 @Component
-@Scope(scopeName = WebApplicationContext.SCOPE_SESSION)//, proxyMode = ScopedProxyMode.TARGET_CLASS)
+@Scope(scopeName = WebApplicationContext.SCOPE_SESSION, proxyMode = ScopedProxyMode.TARGET_CLASS)//, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class ShoppingCart {
 
 
@@ -66,6 +67,7 @@ public class ShoppingCart {
     }
 
     public boolean isProductPutInShoppingCart(Long productToDelete) {
+        logger.error("obiekt w koszyku ma id: " + productsInCart.containsKey(productToDelete));
         return productsInCart.containsKey(productToDelete);
     }
 }

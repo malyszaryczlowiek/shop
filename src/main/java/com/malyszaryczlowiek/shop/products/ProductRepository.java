@@ -1,6 +1,5 @@
 package com.malyszaryczlowiek.shop.products;
 
-
 import com.malyszaryczlowiek.shop.categories.Category;
 import com.malyszaryczlowiek.shop.feature.Feature;
 
@@ -19,6 +18,51 @@ import java.util.List;
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
 
+
+    @Query("SELECT p FROM Product p ORDER BY p.popularity DESC ")
+    List<Product> findProductsWithDescPopularity();
+
+    /*
+    @Query("SELECT p FROM Product p ORDER BY p.prize DESC ")
+    Page<Product> findProductsWithDescPrize(Pageable pageable);
+
+    @Query("SELECT p FROM Product p ORDER BY p.prize ASC ")
+    List<Product> findProductsWithAscPrize();
+     */
+
+
+
+
+    @Query("SELECT p FROM Product p WHERE p.productCategory.sectionDescriptor=:section " +
+            "ORDER BY p.popularity DESC ")
+    List<Product> findProductsInSectionWithDescPopularity(@Param("section") String section);
+
+    @Query("SELECT p FROM Product p WHERE p.productCategory.sectionDescriptor=:section " +
+            "ORDER BY p.prize DESC ")
+    List<Product> findProductsInSectionWithDescPrize(@Param("section") String section);
+
+    @Query("SELECT p FROM Product p WHERE p.productCategory.sectionDescriptor=:section " +
+            "ORDER BY p.prize ASC ")
+    List<Product> findProductsInSectionWithAscPrize(@Param("section") String section);
+
+
+
+
+
+
+    @Query("SELECT p FROM Product p WHERE p.productCategory.categoryDescriptor=:category " +
+            "ORDER BY p.popularity DESC ")
+    List<Product> findProductsInCategoryWithDescPopularity(@Param("category") String category);
+
+
+    @Query("SELECT p FROM Product p WHERE p.productCategory.subcategoryDescriptor=:subcategory " +
+            "ORDER BY p.popularity DESC ")
+    List<Product> findProductsInSubcategoryWithDescPopularity(@Param("subcategory") String subcategory);
+
+
+
+
+
     @Query("SELECT p FROM Product p WHERE p.productCategory=:category")
     Page<Product> findAllProductsInThisCategory(
             @Param(value = "category") Category category,
@@ -34,7 +78,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
      * Find all products with this phrase
      */
     @Query("SELECT p FROM Product p WHERE p.productCategory IN (:categories) AND " +
-            "( p.brand LIKE :phrase OR p.productName LIKE :phrase )")
+            "( p.brand LIKE %:phrase% OR p.productName LIKE %:phrase% )")
     List<Product> findAllProductsInThisCategoryWithThisPhrase(
             @Param(value = "categories") List<Category> categories,
             @Param(value = "phrase") String phrase);
@@ -42,7 +86,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     /**
      * Find all products with this phrase
      */
-    @Query("SELECT p FROM Product p WHERE  p.brand LIKE :phrase OR p.productName LIKE :phrase ")
+    @Query("SELECT p FROM Product p WHERE p.brand LIKE %:phrase% OR p.productName LIKE %:phrase% ")
     List<Product> findAllProductsWithThisPhrase(@Param(value = "phrase") String phrase);
 
 
@@ -63,21 +107,24 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             @Param(value = "categoryList") List<Category> categoryList);
 
 
+
+
+
     /**
      * metody służące do wyłuskania produktów w danej kategorii.
      */
     @Query("SELECT p FROM Product p WHERE p.productCategory.section=:section")
-    Page<Product> findAllProductsInMainCategory(
+    Page<Product> findProductsInSection(
             @Param(value = "section") String section, Pageable pageable);
 
 
-    @Query("SELECT p FROM Product p WHERE p.productCategory.category=:subcategory1")
-    Page<Product> findAllProductsInSubCategory(
-            @Param(value = "subcategory1") String subcategory1, Pageable pageable);
+    @Query("SELECT p FROM Product p WHERE p.productCategory.category=:category")
+    Page<Product> findAllProductsInCategory(
+            @Param(value = "category") String category, Pageable pageable);
 
 
     @Query("SELECT p FROM Product p WHERE p.productCategory.subcategory=:subcategory2")
-    Page<Product> findAllProductsInSubSubCategory(
+    Page<Product> findAllProductsInSubCategory(
             @Param(value = "subcategory2") String subcategory2, Pageable pageable);
 
     @Query("SELECT p FROM Product p WHERE p.specification IN(:spec)")

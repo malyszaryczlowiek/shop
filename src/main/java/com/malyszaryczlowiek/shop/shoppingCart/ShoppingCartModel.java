@@ -39,9 +39,6 @@ public class ShoppingCartModel extends RepresentationModel<ShoppingCartModel> {
         addLinks();
     }
 
-    // dodaje do linków link do już wykonanych zmaówień
-    // TODO sprawdzić czy ten link będzie działał bezpośrednio do jedynej metody.
-    // ważne ma być dodany jeden link do całego modelu a nie do każdego zamówiania
     private void addLinks() {
         this.add(
                 // link do zamówień użytkownika, ale dostęp do tego linku wymaga uwieerzytelnienia.

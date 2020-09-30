@@ -13,22 +13,23 @@ import java.util.List;
 public interface CategoryRepository extends JpaRepository<Category, Long> {
 
 
-    @Query("SELECT c FROM Category c WHERE c.section=:section")
+    @Query("SELECT c FROM Category c WHERE c.sectionDescriptor=:sectionDescriptor")
     List<Category> findAllCategoriesInGivenSection(
-            @Param(value = "section") String section);
+            @Param(value = "sectionDescriptor") String sectionDescriptor);
 
 
-    @Query("SELECT c FROM Category c WHERE c.category=:category AND c.section=:section")
+    @Query("SELECT c FROM Category c WHERE c.categoryDescriptor=:categoryDescriptor " +
+            "AND c.sectionDescriptor=:sectionDescriptor")
     List<Category> findAllSubcategoriesInGivenSectionAndCategory(
-            @Param(value = "section") String section,
-            @Param(value = "category") String category);
+            @Param(value = "sectionDescriptor") String sectionDescriptor,
+            @Param(value = "categoryDescriptor") String categoryDescriptor);
 
-    @Query("SELECT c FROM Category c WHERE c.category=:category AND c.section=:section " +
-            "AND c.subcategory=:subcategory")
+    @Query("SELECT c FROM Category c WHERE c.categoryDescriptor=:categoryDescriptor " +
+            "AND c.sectionDescriptor=:sectionDescriptor AND c.subcategoryDescriptor=:subcategoryDescriptor")
     List<Category> findSubcategory(
-            @Param(value = "section") String section,
-            @Param(value = "category") String category,
-            @Param(value = "subcategory") String subcategory);
+            @Param(value = "sectionDescriptor") String sectionDescriptor,
+            @Param(value = "categoryDescriptor") String categoryDescriptor,
+            @Param(value = "subcategoryDescriptor") String subcategoryDescriptor);
 
 
 }

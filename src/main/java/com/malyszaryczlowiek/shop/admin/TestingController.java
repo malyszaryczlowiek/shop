@@ -2,6 +2,7 @@ package com.malyszaryczlowiek.shop.admin;
 
 import com.malyszaryczlowiek.shop.client.Client;
 import com.malyszaryczlowiek.shop.feature.FeatureRepository;
+import com.malyszaryczlowiek.shop.products.SearchingCriteria;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -241,6 +242,16 @@ public class TestingController {
             return ResponseEntity.status(HttpStatus.OK).body(date);
         }
     }
+
+    @RequestMapping(path = "/searchingParameters", method = RequestMethod.GET)
+    ResponseEntity<?> requestParam() {
+        SearchingCriteria parameters = new SearchingCriteria();
+        Map<String, List<String>> p = new LinkedHashMap<>(1);
+        p.put("key", List.of("value 1", "value 2"));
+        parameters.setSearchingParameters(p);
+        return ResponseEntity.status(HttpStatus.OK).body(parameters);
+    }
+
 
 }
 

@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.WebApplicationContext;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 
 
@@ -18,7 +19,7 @@ import javax.validation.constraints.Positive;
  * sprawdzić czy nie będzie trzeba oznaczyć go jako
  * WebApplicationContext.SCOPE_SESSION
  */
-@Scope(scopeName = WebApplicationContext.SCOPE_SESSION)
+@Scope(scopeName = WebApplicationContext.SCOPE_REQUEST)
 @RestController
 @RequestMapping(path = "/product")
 public class ProductController {
@@ -62,17 +63,19 @@ public class ProductController {
      * obiektów do dodania do koszyka brał odpowiedni obiekt restowy i to z niego
      * wyłuskiwać informacje.
      *
-     * @param amountOfOrderedProducts liczba zamówionych produktów
      * @param id identyfikator produktu
      * @return np informacja o dodaniu do koszyka
      */
     @RequestMapping(path = "/{id}", method = RequestMethod.PUT)
     public ResponseEntity<String> putProductToShoppingCart(
-            @Positive @RequestBody Integer amountOfOrderedProducts, @PathVariable Long id) {
+            @Valid @RequestBody ProductIdOrder productIdOrder, @PathVariable Long id) {
+        if (!id.equals(productIdOrder.getId()))
+            ResponseEntity.status(HttpStatus.CONFLICT).build();
+
         if (productRepository.existsById(id)) {
-            shoppingCart.addProduct(id, amountOfOrderedProducts);
+            shoppingCart.addProduct(productIdOrder.getId(), productIdOrder.getAmount());
             return ResponseEntity.status(HttpStatus.ACCEPTED)
-                    .body("Product in number of " + amountOfOrderedProducts + " added to shopping cart.");
+                    .body("Product in number of " + productIdOrder.getAmount() + " added to shopping cart.");
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
@@ -86,7 +89,7 @@ public class ProductController {
      * @return Powiadomienie
      */
     @RequestMapping(path = "/{id}", method = RequestMethod.DELETE)
-    public ResponseEntity<String> deleteProductFromCart(@PathVariable Long id) {
+    public ResponseEntity<String> deleteProductFromCart(@Positive @PathVariable Long id) {
         if (productRepository.existsById(id)) {
             //Product productToDelete = productRepository.getOne(id);
             logger.debug("rozmiar koszyka przed usunięciem produktu wynosi: " + shoppingCart.getAllProductsInShoppingCart().size());
@@ -101,8 +104,8 @@ public class ProductController {
                         .body("Bad Request. There is no such product to remove from shopping cart");
             }
             logger.debug("Nie ma takiego produktu w koszyku.");
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body("Bad Request. There is no current product in shopping cart");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Bad Request. There is no current product in shopping cart");
         }
         else
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Page Not Found :( " +
@@ -160,22 +163,6 @@ public class ProductController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build(); // bo to oznacza, że nie ma takiej kateogrii
     }
      */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 /*

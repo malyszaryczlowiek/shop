@@ -48,25 +48,46 @@ public class ProductInitializer implements ApplicationRunner {
         Category compCategory = new Category("Komputery i Podzespoły", "komputery_i_podzespoly",
                 "Komputery", "komputery",
                 "Desktopy", "desktopy");
+        Category aioCategory = new Category("Komputery i Podzespoły", "komputery_i_podzespoly",
+                "Komputery", "komputery",
+                "All in One", "aio");
+
+        Category monitors = new Category("Komputery i Podzespoły", "komputery_i_podzespoly",
+                "Urządzenia peryferyjne", "urzadzenia_peryferyjne",
+                "Monitory", "monitory");
 
         categoryRepository.deleteAll();
         Category c = categoryRepository.save(compCategory);
+        Category aio = categoryRepository.save(aioCategory);
+        Category monitory = categoryRepository.save(monitors);
 
         // specyfikacja
-        Feature socket = new Feature( "usb", "Łącze Usb", "Usb-C 2x" );
+        Feature socket = new Feature( "usb", "Usb", "Usb-C 2x" );
+        Feature socket2 = new Feature( "usb", "Usb", "Thunderbolt 2x" );
         featureRepository.deleteAll();
-        Feature persistedSocket = featureRepository.saveAndFlush(socket);
-        List<Feature> specification = List.of(persistedSocket);
+        Feature persistedSocket = featureRepository.save(socket);
+        Feature persistedSocket2 = featureRepository.saveAndFlush(socket2);
+        List<Feature> specificationDell = List.of(persistedSocket);
+        List<Feature> specificationApple = List.of(persistedSocket, persistedSocket2);
 
-        Product komputerDell = new Product(c, "Dell", "XPS-cośtam",
+
+        Product komputerDell = new Product(c, "Dell", "XPS cośtam",
                 new BigDecimal("2999.00"), 5);
-        komputerDell.setSpecification(specification);
-        Product acerDesktop = new Product(c, "Acer", "Nitro-5",
-                new BigDecimal("3999.00"), 3);
-        acerDesktop.setSpecification(specification);
+        komputerDell.setSpecification(specificationDell);
+
+
+        Product imac = new Product(aio, "Apple", "iMac i5",
+                new BigDecimal("9999.00"), 3);
+        imac.setSpecification(specificationApple);
+
+
+        Product monitorDell = new Product(monitory, "Dell", "P2419H",
+                new BigDecimal("1999.99"), 10);
+
 
         productRepository.save(komputerDell);
-        productRepository.save(acerDesktop);
+        productRepository.save(imac);
+        productRepository.save(monitorDell);
         logger.debug("DB initialized with products.");
     }
 }

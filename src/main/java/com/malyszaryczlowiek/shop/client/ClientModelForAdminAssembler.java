@@ -45,7 +45,7 @@ public class ClientModelForAdminAssembler implements RepresentationModelAssemble
                 ,linkTo(methodOn(AdminUserController.class)
                         .getAllUsers(20,0,"desc", "name"))
                         .withRel("allUsers")
-                ,linkTo(methodOn(MainPageController.class).welcomePage()).withRel("mainPage")
+                ,linkTo(MainPageController.class).withRel("mainPage")
         );
     }
 
