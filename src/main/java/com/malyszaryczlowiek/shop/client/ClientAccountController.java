@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -32,10 +33,12 @@ public class ClientAccountController {
 
     private final Logger logger = LoggerFactory.getLogger(ClientAccountController.class);
     private final ClientRepository clientRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public ClientAccountController(ClientRepository clientRepository) {
+    public ClientAccountController(ClientRepository clientRepository, PasswordEncoder passwordEncoder) {
         this.clientRepository = clientRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
 
@@ -55,7 +58,7 @@ public class ClientAccountController {
     public ResponseEntity<ClientModel> getUserInfo(Authentication authentication) {
         String email = authentication.getName();
         Client client = clientRepository.findByEmail(email);
-        logger.trace("Returning client information: " + email);
+        logger.debug("Returning client information: " + email);
         ClientModelAssembler modelAssembler = new ClientModelAssembler();
         return ResponseEntity.status(HttpStatus.OK).body(modelAssembler.toModel(client));
     }
@@ -74,9 +77,14 @@ public class ClientAccountController {
     ResponseEntity<String> changePassword(@Valid @RequestBody PasswordChanger passwordChanger,
                           Authentication authentication) {
         String email = authentication.getName();
+
         Client client = clientRepository.findByEmail(email);
-        boolean oldPasswordMatcher = new BCryptPasswordEncoder()
-                .encode(passwordChanger.getOldPass()).equals(client.getPass());
+        //String sendHash = passwordEncoder.encode(passwordChanger.getOldPass());
+        String oldHash = client.getPass();
+        //boolean oldPasswordMatcher = oldHash.equals(sendHash);
+        boolean oldPasswordMatcher  = passwordEncoder.matches(passwordChanger.getOldPass(), oldHash);
+
+        //logger.error("old: " + oldHash + " and new hask: " + sendHash);
         if (oldPasswordMatcher) {
             client.setPass(new BCryptPasswordEncoder().encode(passwordChanger.getNewPass()));
             // Client refreshedClient =

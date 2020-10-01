@@ -1,7 +1,6 @@
 package com.malyszaryczlowiek.shop.order;
 
 import com.malyszaryczlowiek.shop.productOrder.ProductOrderModel;
-import com.malyszaryczlowiek.shop.productOrder.ProductOrderModelAssembler;
 
 import org.springframework.hateoas.RepresentationModel;
 
@@ -23,11 +22,10 @@ public class OrderModel extends RepresentationModel<OrderModel> {
     private final Long orderDate;
 
     public OrderModel(Order order) {
-        ProductOrderModelAssembler assembler = new ProductOrderModelAssembler();
         this.productOrderModels.addAll(
                 order.getListOfProducts()
                         .stream()
-                        .map(assembler::toModel)
+                        .map(ProductOrderModel::new)
                         .collect(Collectors.toList())
         );
         this.status = order.getStatus();

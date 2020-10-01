@@ -19,7 +19,7 @@ import javax.validation.constraints.Positive;
  * sprawdzić czy nie będzie trzeba oznaczyć go jako
  * WebApplicationContext.SCOPE_SESSION
  */
-@Scope(scopeName = WebApplicationContext.SCOPE_REQUEST)
+@Scope(scopeName = WebApplicationContext.SCOPE_SESSION)
 @RestController
 @RequestMapping(path = "/product")
 public class ProductController {

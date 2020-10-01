@@ -11,8 +11,8 @@ import org.springframework.stereotype.Service;
 
 /**
  * Jest to service dostarczający w klasie konfigurującej bazpieczeństwo
- * tzn. {@link com.malyszaryczlowiek.shop.restMySqlSecurity.RestMySqlSecurity BasicH2Security}
- * w metodzie {@link com.malyszaryczlowiek.shop.restMySqlSecurity.RestMySqlSecurity#configure(AuthenticationManagerBuilder)
+ * tzn. {@link com.malyszaryczlowiek.shop.restMySqlSecurity.RestMySqlSecurity BasicH2Security} w metodzie
+ * {@link com.malyszaryczlowiek.shop.restMySqlSecurity.RestMySqlSecurity#configure(AuthenticationManagerBuilder)
  * BasicH2Security.configure(AuthenticationManagerBuilder)}
  * do {@link org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
  * AuthenticationManagerBuilder}a informację o użytkowniku za pośrednictwem klasy
@@ -57,7 +57,7 @@ public class ClientDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         Client client = clientRepository.findByEmail(email);
         if (client != null) {
-            logger.trace("znaleziono usera ");
+            logger.debug("znaleziono usera ");
             return new ClientDetails(client);
         }
         logger.error("usera: " + email + " nie znaloziono");

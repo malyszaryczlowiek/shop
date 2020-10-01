@@ -38,6 +38,7 @@ public class TestingFilter implements Filter {
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
         HttpServletResponse httpServletResponse = (HttpServletResponse) response;
 
+
         //if (httpServletRequest.getHeader("simpleHeader").equals("myHeader"))
         if (httpServletRequest.isUserInRole("ADMIN"))
             chain.doFilter(request, response);

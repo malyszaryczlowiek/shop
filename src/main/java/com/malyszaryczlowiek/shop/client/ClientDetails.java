@@ -13,7 +13,6 @@ import java.util.Collection;
 
 import java.util.stream.Collectors;
 
-//@Component //
  /**
   * nie może być @Component ponieważ nie wstzykujemy tutaj klienta.
   * jest to zwykła klasa POJO i jej obiekt nie jest przechowywany
@@ -38,7 +37,7 @@ public class ClientDetails implements UserDetails {
       */
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        logger.trace("Extracting GrantedAuthorities of user: " + client.toString());
+        logger.debug("Extracting GrantedAuthorities of user: " + client.toString());
         Converter converter = new ProductDescriptionConverter(",");
         return converter.convertFromStringToList(client.getRoles())
                 .stream()

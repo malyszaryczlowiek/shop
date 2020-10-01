@@ -1,9 +1,8 @@
 package com.malyszaryczlowiek.shop.shoppingCart;
 
-import com.malyszaryczlowiek.shop.order.OrderController;
+import com.malyszaryczlowiek.shop.order.MyOrdersController;
 import com.malyszaryczlowiek.shop.productOrder.ProductOrder;
 import com.malyszaryczlowiek.shop.productOrder.ProductOrderModel;
-import com.malyszaryczlowiek.shop.productOrder.ProductOrderModelAssembler;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -29,20 +28,15 @@ public class ShoppingCartModel extends RepresentationModel<ShoppingCartModel> {
 
 
     public ShoppingCartModel(ShoppingCart shoppingCart, int page, int size) {
-        ProductOrderModelAssembler assembler = new ProductOrderModelAssembler();
         List<ProductOrderModel> productList = new ArrayList<>();
         shoppingCart.getAllProductsInShoppingCart().forEach(
-                (product, integer) -> productList.add(assembler.toModel(new ProductOrder(product, integer)))
+                (product, integer) -> productList.add(new ProductOrderModel(new ProductOrder(product, integer)))
         );
         Pageable pageable = PageRequest.of(page,size);
         productsInShoppingCart = new PageImpl<>(productList, pageable, productList.size());
-        addLinks();
-    }
-
-    private void addLinks() {
         this.add(
                 // link do zamówień użytkownika, ale dostęp do tego linku wymaga uwieerzytelnienia.
-                linkTo(OrderController.class).withRel("my_orders")
+                linkTo(MyOrdersController.class).withRel("my_orders")
         );
     }
 

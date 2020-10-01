@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
  * nowy obiekt tego typu.
  */
 @Component
-@Scope(scopeName = WebApplicationContext.SCOPE_SESSION, proxyMode = ScopedProxyMode.TARGET_CLASS)//, proxyMode = ScopedProxyMode.TARGET_CLASS)
+@Scope(scopeName = WebApplicationContext.SCOPE_SESSION, proxyMode = ScopedProxyMode.TARGET_CLASS)//, proxyMode = ScopedProxyMode.TARGET_CLASS
 public class ShoppingCart {
 
 
@@ -99,6 +99,10 @@ public class ShoppingCart {
                 .filter(productIdOrder -> productIdOrder.getId().equals(productToDelete))
                 .findFirst();
         return result.isPresent();
+    }
+
+    public void clearShoppingCart() {
+        this.productIdOrderList.clear();
     }
 }
 

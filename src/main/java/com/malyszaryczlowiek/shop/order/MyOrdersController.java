@@ -26,19 +26,19 @@ import javax.validation.constraints.PositiveOrZero;
  * zawartość.
  */
 @RestController
-@RequestMapping("/myOrders")
-public class OrderController {
+@RequestMapping("/myAccount/myOrders")
+public class MyOrdersController {
 
-    private final Logger logger = LoggerFactory.getLogger(OrderController.class);
+    private final Logger logger = LoggerFactory.getLogger(MyOrdersController.class);
 
     private final OrderRepository orderRepository;
     private final ClientRepository clientRepository;
     private final ControllerUtil controllerUtil;
 
     @Autowired
-    public OrderController(OrderRepository orderRepository,
-                           ClientRepository clientRepository,
-                           ControllerUtil controllerUtil) {
+    public MyOrdersController(OrderRepository orderRepository,
+                              ClientRepository clientRepository,
+                              ControllerUtil controllerUtil) {
         this.orderRepository = orderRepository;
         this.clientRepository = clientRepository;
         this.controllerUtil = controllerUtil;
@@ -72,11 +72,12 @@ public class OrderController {
             else
                 orders = orderRepository.findOrdersByClient(client, pageable);
             if (orders.getSize() >0 )
-                logger.debug("Page<Order> ma rozmiar (są to zamówienia użytkownika): " + orders.getSize());
-            else
+                logger.debug("Page<Order> ma standardowo rozmiar 10 (są to zamówienia użytkownika): " + orders.getSize());
+            else {
                 logger.debug("nie ma żadnego zrealizowanego zamówienia. Page<Order> jest pusty");
-            OrderModelAssembler assembler = new OrderModelAssembler();
-            return ResponseEntity.status(HttpStatus.OK).body(orders.map(assembler::toModel));
+                return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+            }
+            return ResponseEntity.status(HttpStatus.OK).body(orders.map(OrderModel::new));
         }
         authentication.setAuthenticated(false);
         logger.debug("Nie udało się uzyskać uwierzytelnienia clienta.");
@@ -98,8 +99,6 @@ public class OrderController {
 /*
 @RequestMapping(path = "/{id}", method = RequestMethod.GET)
     public String getConcreteOrder(@PathVariable(name = "id") Long id) {
-
-
 
         return "concrete order: " + id;
     }

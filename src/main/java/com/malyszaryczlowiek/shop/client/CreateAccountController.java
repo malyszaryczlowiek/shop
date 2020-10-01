@@ -38,8 +38,10 @@ public class CreateAccountController {
     }
 
 
+
     /**
-     * Metoda tworzy nowego Clienta.
+     *
+     * Metoda tworzy nowego Clienta. ???
      *
      * @param clientCreator obiekt klienta wysłany przez formularz po stronie front-endu
      * @return info o statusie.

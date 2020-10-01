@@ -4,7 +4,6 @@ import com.malyszaryczlowiek.shop.client.Client;
 import com.malyszaryczlowiek.shop.client.ClientRepository;
 import com.malyszaryczlowiek.shop.order.Order;
 import com.malyszaryczlowiek.shop.order.OrderModel;
-import com.malyszaryczlowiek.shop.order.OrderModelAssembler;
 import com.malyszaryczlowiek.shop.order.OrderRepository;
 import com.malyszaryczlowiek.shop.productOrder.ProductOrder;
 import com.malyszaryczlowiek.shop.productOrder.ProductOrderRepository;
@@ -15,6 +14,7 @@ import com.malyszaryczlowiek.shop.products.ProductRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -22,6 +22,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.WebApplicationContext;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.validation.constraints.PositiveOrZero;
 import java.util.ArrayList;
@@ -34,7 +35,7 @@ import java.util.Optional;
  * kontroller musi mieć zasięg sesji ponieważ wstrzykiwany jest do niego
  * koszyk który tez ma zasięg sesji.
  */
-@Scope(scopeName = WebApplicationContext.SCOPE_SESSION)
+@Scope(scopeName = WebApplicationContext.SCOPE_SESSION, proxyMode = ScopedProxyMode.TARGET_CLASS)
 @RestController
 @RequestMapping("/shoppingCart")
 public class ShoppingCartController {
@@ -132,21 +133,29 @@ public class ShoppingCartController {
      * @param authentication obiekt wymagany do wyłuskania informacji o nazwie użytkowanika
      * @return zwraca wykonane zamówienie.
      */
-    //@Secured("ROLE_CLIENT")
     @RequestMapping(value = "/payment", method = RequestMethod.GET)
-    ResponseEntity<OrderModel> goToPayment(Authentication authentication) {
-        String email = authentication.getName();
-        Client client = clientRepository.findByEmail(email);
-        if (client != null) {
+    ResponseEntity<OrderModel> goToPayment(Authentication authentication, HttpServletResponse response) {
+        if (authentication != null) {
+            String email = authentication.getName();
+            // tutaj producty to już są obiekty w stanie persistence.
             Map<Product, Integer> orderedProducts = shoppingCart.getAllProductsInShoppingCart();
-            List<ProductOrder> listOfProductOrder = new ArrayList<>(orderedProducts.size());
+            int cartSize = orderedProducts.size();
+            if ( cartSize == 0)
+                return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+            List<ProductOrder> listOfProductOrder = new ArrayList<>(cartSize);
             orderedProducts.forEach( (prod, numb) -> listOfProductOrder.add(new ProductOrder(prod, numb)));
+            // tutaj lista finalList jest persistence - to są obiekty zapisane już w bazie danych.
             List<ProductOrder> finalList = productOrderRepository.saveAll(listOfProductOrder);
+            // towrzę obiekt zamówienia - nie jest persistence
             Order order = new Order(finalList, "Completed", System.currentTimeMillis());
+            Client client = clientRepository.findByEmail(email);
+            // wczytuję obiekt clienta który jest persistence
             order.setClient(client);
+            // tutaj mam już obiekt który jest persistence - nastąpiło zapisanie zamówienia do bazy danych
             Order injectedOrder = orderRepository.saveAndFlush(order);
-            OrderModelAssembler assembler = new OrderModelAssembler();
-            return ResponseEntity.status(HttpStatus.OK).body(assembler.toModel(injectedOrder));
+            // czyszczę produkty z koszyka.
+            shoppingCart.clearShoppingCart();
+            return ResponseEntity.status(HttpStatus.OK).body(new OrderModel(injectedOrder));
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
