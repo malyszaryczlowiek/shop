@@ -38,7 +38,7 @@ public class BasicMySqlSecurity extends WebSecurityConfigurerAdapter {
         http.csrf().disable(); // wyłączam ochronę CSRF aby móc korzystać z Postmana
         //csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());//
         http.authorizeRequests()
-                .antMatchers( "/admin/**", "/users/**", "/testing/**")
+                .antMatchers( "/admin/**", "/testing/**")
                 .hasRole("ADMIN")
                 .antMatchers("/myOrders/**", "/myAccount/**")// myOrders będą pod myAccount
                 .hasRole("CLIENT")

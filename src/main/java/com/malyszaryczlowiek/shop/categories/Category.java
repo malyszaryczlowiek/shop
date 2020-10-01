@@ -81,9 +81,9 @@ public class Category implements Comparable<Category> {
     @Override
     public int compareTo(Category o) {
         int section = this.getSection().compareTo(o.getSection());
-        if (section != 0) {
+        if (section == 0) {
             int cat = this.getCategory().compareTo(o.getCategory());
-            if (cat != 0)
+            if (cat == 0)
                 return this.getSubcategory().compareTo(o.getSubcategory());
             return cat;
         }

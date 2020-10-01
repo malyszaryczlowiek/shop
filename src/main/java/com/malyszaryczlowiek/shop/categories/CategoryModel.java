@@ -12,11 +12,19 @@ public class CategoryModel extends RepresentationModel<CategoryModel> {
     private final String category;
     private final String subcategory;
 
+    private final String sectionDescriptor;
+    private final String categoryDescriptor;
+    private final String subcategoryDescriptor;
+
 
     public CategoryModel(Category category) {
         this.section = category.getSection();
         this.category = category.getCategory();
         this.subcategory = category.getSubcategory();
+
+        this.sectionDescriptor = category.getSectionDescriptor();
+        this.categoryDescriptor = category.getCategoryDescriptor();
+        this.subcategoryDescriptor = category.getSubcategoryDescriptor();
 
         this.add(
                 // link do kategorii ale bez request parameters
@@ -39,6 +47,18 @@ public class CategoryModel extends RepresentationModel<CategoryModel> {
 
     public String getSubcategory() {
         return subcategory;
+    }
+
+    public String getSectionDescriptor() {
+        return sectionDescriptor;
+    }
+
+    public String getCategoryDescriptor() {
+        return categoryDescriptor;
+    }
+
+    public String getSubcategoryDescriptor() {
+        return subcategoryDescriptor;
     }
 }
 
