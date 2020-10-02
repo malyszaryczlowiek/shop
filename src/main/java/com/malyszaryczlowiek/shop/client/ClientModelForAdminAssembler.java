@@ -1,7 +1,7 @@
 package com.malyszaryczlowiek.shop.client;
 
 import com.malyszaryczlowiek.shop.admin.AdminUserController;
-import com.malyszaryczlowiek.shop.mainPageController.MainPageController;
+import com.malyszaryczlowiek.shop.mainPage.MainPageController;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;

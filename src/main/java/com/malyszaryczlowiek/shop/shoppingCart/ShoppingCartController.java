@@ -143,6 +143,11 @@ public class ShoppingCartController {
             if ( cartSize == 0)
                 return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
             List<ProductOrder> listOfProductOrder = new ArrayList<>(cartSize);
+
+
+            // TODO zrobić coś jeszcze na wypadek zmiany ilości produktów oraz ich braku w magazynie;
+
+
             orderedProducts.forEach( (prod, numb) -> listOfProductOrder.add(new ProductOrder(prod, numb)));
             // tutaj lista finalList jest persistence - to są obiekty zapisane już w bazie danych.
             List<ProductOrder> finalList = productOrderRepository.saveAll(listOfProductOrder);

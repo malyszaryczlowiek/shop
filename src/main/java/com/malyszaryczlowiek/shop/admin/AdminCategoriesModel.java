@@ -1,15 +1,12 @@
 package com.malyszaryczlowiek.shop.admin;
 
-import com.malyszaryczlowiek.shop.AdminCategoriesController;
 import com.malyszaryczlowiek.shop.categories.Category;
 import com.malyszaryczlowiek.shop.categories.CategoryModel;
 
 import org.springframework.hateoas.RepresentationModel;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 

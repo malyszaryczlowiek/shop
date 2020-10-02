@@ -46,10 +46,8 @@ public class ProductController {
     @RequestMapping(path = "/{id}", method = RequestMethod.GET)
     public ResponseEntity<ProductModel> getProduct(@PathVariable Long id) {
         if (productRepository.existsById(id)) {
-            ProductModelAssembler assembler = new ProductModelAssembler();
-            assembler.setAdditionalSpecification(true);
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(assembler.toModel(productRepository.getOne(id)));
+                    .body(new ProductModel(productRepository.getOne(id), true));
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }

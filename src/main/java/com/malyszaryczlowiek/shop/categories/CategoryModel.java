@@ -1,6 +1,6 @@
 package com.malyszaryczlowiek.shop.categories;
 
-import com.malyszaryczlowiek.shop.mainPageController.MainPageController;
+import com.malyszaryczlowiek.shop.mainPage.MainPageController;
 
 import org.springframework.hateoas.RepresentationModel;
 

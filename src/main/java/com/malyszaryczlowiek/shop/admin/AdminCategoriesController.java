@@ -1,10 +1,12 @@
-package com.malyszaryczlowiek.shop;
+package com.malyszaryczlowiek.shop.admin;
 
-import com.malyszaryczlowiek.shop.admin.AdminCategoriesModel;
 import com.malyszaryczlowiek.shop.categories.Category;
 import com.malyszaryczlowiek.shop.categories.CategoryExchanger;
 import com.malyszaryczlowiek.shop.categories.CategoryRepository;
+import com.malyszaryczlowiek.shop.products.ProductRepository;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.http.HttpStatus;
@@ -26,11 +28,16 @@ import java.util.stream.Collectors;
 @RequestMapping("/admin/categories")
 public class AdminCategoriesController {
 
+    private final Logger logger = LoggerFactory.getLogger(AdminCategoriesController.class);
+
     private final CategoryRepository categoryRepository;
+    private final ProductRepository productRepository;
 
     @Autowired
-    public AdminCategoriesController(CategoryRepository categoryRepository) {
+    public AdminCategoriesController(CategoryRepository categoryRepository,
+                                     ProductRepository productRepository) {
         this.categoryRepository = categoryRepository;
+        this.productRepository = productRepository;
     }
 
     /**
@@ -85,11 +92,40 @@ public class AdminCategoriesController {
     }
 
 
+    /**
+     * usunąć kategorię można ale tylko wtedy gdy nie jest do niej przypisany żaden
+     * produkt.
+     *
+     * @return
+     */
+    @RequestMapping(method = RequestMethod.DELETE)
+    public ResponseEntity<AdminCategoriesModel> deleteCategory(
+            @Valid @RequestBody Category toDelete) {
+        Example<Category> exampleOld = Example.of(toDelete);
+        boolean existsInDb = categoryRepository.exists(exampleOld);
+        logger.debug("czy istnieje w db categoria którą usówamy: " + existsInDb);
+        if (!existsInDb)
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build(); // nie ma co usunąć
 
 
+        List<Category> listOfExampleCategories = categoryRepository.findAll(exampleOld);
+        logger.debug("ile jest pasujących kategorii: " + listOfExampleCategories.size());
+        if (listOfExampleCategories.size() != 1)
+            return ResponseEntity.status(HttpStatus.MULTIPLE_CHOICES).build();
 
 
+        // ta kategoria jest już zarządzana.
+        Category categoryToDelete = listOfExampleCategories.get(0);
+        int productsInCategory = productRepository.getNumberOfProductsInCategory(categoryToDelete);
+        logger.debug("ilość produktów w kategorii którą chcę usunąć: " + productsInCategory);
+        if (productsInCategory > 0)
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        // finalnie usuwam kategorię
+        categoryRepository.delete(categoryToDelete);
 
+        // i zwracam ostateczną listę
+        return returnSortedListOfCategories();
+    }
 
 
 

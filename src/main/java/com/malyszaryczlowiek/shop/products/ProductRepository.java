@@ -17,6 +17,10 @@ import java.util.List;
 @Transactional
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
+    @Query("SELECT COUNT(p) FROM Product p WHERE p.productCategory=:category ")
+    int getNumberOfProductsInCategory(@Param("category") Category category);
+
+
 
 
     @Query("SELECT p FROM Product p ORDER BY p.popularity DESC ")

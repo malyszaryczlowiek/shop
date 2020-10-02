@@ -1,10 +1,7 @@
-package com.malyszaryczlowiek.shop.mainPageController;
+package com.malyszaryczlowiek.shop.mainPage;
 
 
 import com.malyszaryczlowiek.shop.categories.*;
-import com.malyszaryczlowiek.shop.client.Client;
-import com.malyszaryczlowiek.shop.client.ClientCreator;
-import com.malyszaryczlowiek.shop.client.ClientRepository;
 import com.malyszaryczlowiek.shop.controllerUtil.ControllerUtil;
 import com.malyszaryczlowiek.shop.products.*;
 
@@ -15,10 +12,8 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import javax.validation.constraints.PositiveOrZero;
 import java.util.Iterator;
 import java.util.List;
@@ -31,17 +26,15 @@ public class MainPageController {
 
     private final Logger logger = LoggerFactory.getLogger(MainPageController.class);
 
-    private final ClientRepository clientRepository;
+
     private final ControllerUtil controllerUtil;
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
 
-    public MainPageController(ClientRepository clientRepository,
-                              ControllerUtil controllerUtil,
+    public MainPageController(ControllerUtil controllerUtil,
                               ProductRepository productRepository,
                               CategoryRepository categoryRepository) {
-        this.clientRepository = clientRepository;
-        this.controllerUtil = controllerUtil;
+            this.controllerUtil = controllerUtil;
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
     }
@@ -73,7 +66,8 @@ public class MainPageController {
                     .stream().limit(size).collect(Collectors.toList());
             Page<Product> pageOfProducts = new PageImpl<>(listOfProducts, pageable, listOfProducts.size());
             //MainPageModel model = new MainPageModel(categoryRepository.findAll(), pageOfProducts);
-            return ResponseEntity.status(HttpStatus.OK).body(new CategoriesModel(categoryRepository.findAll(), pageOfProducts));
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(new CategoriesModel(categoryRepository.findAll(), pageOfProducts));
         }
     }
 
@@ -163,11 +157,13 @@ public class MainPageController {
         return getProducts(categories, searchingCriteria, pageable);
     }
 
+
     /*
     ####################################
     helper methods
     ####################################
      */
+
 
     private ResponseEntity<Page<ProductModel>> getProductsFromPhrase(String phrase, Pageable pageable) {
         List<Product> listOfProducts = productRepository.findAllProductsWithThisPhrase(phrase);
@@ -176,12 +172,12 @@ public class MainPageController {
         return convertListOfProductsToPageOfProductModel(listOfProducts,pageable);
     }
 
+
     private ResponseEntity<Page<ProductModel>> convertListOfProductsToPageOfProductModel(
             List<Product> listOfProducts, Pageable pageable) {
         Page<Product> pageOfProducts = new PageImpl<>(listOfProducts, pageable, listOfProducts.size());
-        ProductModelAssembler assembler = new ProductModelAssembler();
-        assembler.setAdditionalSpecification(false);
-        Page<ProductModel> finalPage = pageOfProducts.map(assembler::toModel);
+        Page<ProductModel> finalPage = pageOfProducts.map(
+                product -> new ProductModel(product, false));
         return ResponseEntity.status(HttpStatus.OK).body(finalPage);
     }
 

@@ -1,4 +1,4 @@
-package com.malyszaryczlowiek.shop.mainPageController;
+package com.malyszaryczlowiek.shop.mainPage;
 
 import com.malyszaryczlowiek.shop.client.ClientAccountController;
 import com.malyszaryczlowiek.shop.client.CreateAccountController;

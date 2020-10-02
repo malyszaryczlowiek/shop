@@ -30,7 +30,7 @@ import java.util.*;
 @RequestMapping("/testing")
 public class TestingController {
 
-    Logger logger = LoggerFactory.getLogger(AdminCategoryController.class);
+    Logger logger = LoggerFactory.getLogger(TestingController.class);
     private final FeatureRepository featureRepository;
 
 
